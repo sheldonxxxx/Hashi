@@ -8,9 +8,9 @@ import threading
 
 import pytest
 
-from workspace_bridge import checkpoint_store as module
-from workspace_bridge.checkpoint_store import CheckpointStore
-from workspace_bridge.security import BridgeError, SafeRoot
+from hashi import checkpoint_store as module
+from hashi.checkpoint_store import CheckpointStore
+from hashi.security import BridgeError, SafeRoot
 
 WS = "ws_" + "a" * 24
 

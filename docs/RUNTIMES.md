@@ -1,6 +1,6 @@
 # Runtimes
 
-Consolidated Pi, Codex, Claude Code, and OpenCode runtime notes for Workspace Bridge `1.0.0`. For
+Consolidated Pi, Codex, Claude Code, and OpenCode runtime notes for Hashi `1.1.0`. For
 the wire contract see [Runtime Protocol](RUNTIME_PROTOCOL.md); for service
 commands see [Setup](SETUP.md) and [Operations](OPERATIONS.md).
 
@@ -22,16 +22,16 @@ Each runtime also ships as an agent plugin that the owning Node starts and
 supervises over stdio (Agent Protocol v2, see
 [Runtime Protocol](RUNTIME_PROTOCOL.md#agent-protocol-v2-stdio-plugins)).
 A plugin adapter has no endpoint, token or service; add one with
-`workspace-bridge node adapter add <plugin> --name <name>` (or
-`workspace-bridge local-node adapter add` on the Bridge machine) as shown in
+`hashi node adapter add <plugin> --name <name>` (or
+`hashi local-node adapter add` on the Bridge machine) as shown in
 [Setup](SETUP.md#plugin-adapters-no-separate-service).
 
 | Plugin | Command the Node runs | Settings |
 |---|---|---|
-| `claude` | `python -m workspace_bridge.plugin_host claude` (needs the `claude` extra) | `binary`, `setting_sources`, `permission_mode` |
-| `codex` | `python -m workspace_bridge.plugin_host codex` | none |
-| `opencode` | `python -m workspace_bridge.plugin_host opencode` | `binary` |
-| `pi` | `workspace-bridge-pi-adapter --stdio` (npm package) | `pi_binary`, `agent_dir` |
+| `claude` | `python -m hashi.plugin_host claude` (needs the `claude` extra) | `binary`, `setting_sources`, `permission_mode` |
+| `codex` | `python -m hashi.plugin_host codex` | none |
+| `opencode` | `python -m hashi.plugin_host opencode` | `binary` |
+| `pi` | `hashi-pi-adapter --stdio` (npm package) | `pi_binary`, `agent_dir` |
 
 Every plugin also accepts `log_level`. Changing a plugin adapter's projects root
 or settings rotates its revision, so active runs bound to the old
@@ -90,7 +90,7 @@ user's existing provider login and configuration:
 
 ```sh
 opencode2 --version
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" adapter add opencode --name OpenCode --set binary=opencode2
+hashi node --state "$HOME/.local/state/hashi-node" adapter add opencode --name OpenCode --set binary=opencode2
 ```
 
 The adapter owns a private authenticated loopback `serve --stdio` process and
@@ -127,7 +127,7 @@ idle proof even after the owned server restarts; start a fresh run instead.
 
 ## Troubleshooting
 
-- An adapter is unavailable: run `workspace-bridge node adapter test
+- An adapter is unavailable: run `hashi node adapter test
   <adapter-id>` on the Node host. It starts the plugin, prints the reason it
   could not answer, and names its `plugin.log`.
 - Model save rejected: list the live catalog for the exact workspace first;

@@ -1,20 +1,20 @@
 # Contributing
 
-Human contributor guide for Workspace Bridge. Agents contributing to this
+Human contributor guide for Hashi. Agents contributing to this
 repository follow [AGENTS.md](AGENTS.md) plus the relevant sections below.
 End-user installation is covered by [docs/SETUP.md](docs/SETUP.md), not
 here.
 
 ## Repo structure
 
-- `workspace_bridge/` — Python MCP service, Manager API, security policy,
+- `hashi/` — Python MCP service, Manager API, security policy,
   CLI (`cli.py`), Node service (`node_*.py`), agent plugins
   (`plugin_*.py`, `*_host_adapter.py`), run coordination, diagnostics,
   notifications, and release helpers.
 - `web/` — React/TypeScript Manager. Vite builds into
-  `workspace_bridge/static/dist/` for packaging.
+  `hashi/static/dist/` for packaging.
 - `runtime/pi-host-adapter/` — Node.js Pi plugin (npm package
-  `workspace-bridge-pi-host-adapter`).
+  `hashi-pi-host-adapter`).
 - `tests/test_*.py` — Python suite. Adapter tests live in
   `runtime/pi-host-adapter/test/*.test.mjs`; browser tests in
   `web/tests/*.spec.ts`.
@@ -25,7 +25,7 @@ here.
 ## Setup
 
 Treat `uv` as the canonical Python runner. Prefer `uv run python ...`,
-`uv run pytest ...`, and `uv run workspace-bridge ...`.
+`uv run pytest ...`, and `uv run hashi ...`.
 
 ```sh
 uv sync --extra test
@@ -61,14 +61,14 @@ changes so packaged assets stay current.
 CLI smoke that does not mutate live services:
 
 ```sh
-uv run workspace-bridge --help
-uv run workspace-bridge release --help
+uv run hashi --help
+uv run hashi release --help
 ```
 
 Doctor checks the selected deployment's private state. Select its actual state directory explicitly:
 
 ```sh
-uv run workspace-bridge --state /path/to/bridge-state doctor --offline
+uv run hashi --state /path/to/bridge-state doctor --offline
 ```
 
 Without `--state`, Doctor checks the default host state. Offline mode

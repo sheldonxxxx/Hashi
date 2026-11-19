@@ -18,7 +18,7 @@ import pytest
 def test_removed_bridge_update_endpoints_absent(env):
     import asyncio
     import httpx
-    from workspace_bridge.api import make_admin
+    from hashi.api import make_admin
     service = env["service"]
     app = make_admin(service)
 
@@ -50,12 +50,12 @@ def test_removed_node_deployment_endpoints_absent(env):
     assert transport.request("GET", "/v1/deployment/status").status_code == 404
     assert transport.request("POST", "/v1/deployment/backup", b"{}").status_code == 404
     assert transport.request("POST", "/v1/deployment/exec", b"{}").status_code == 404
-    from workspace_bridge import node_api
+    from hashi import node_api
     assert not hasattr(node_api, "make_node_api")
 
 
 def test_removed_cli_deploy_namespace_absent(capsys):
-    from workspace_bridge.cli import main as cli_main
+    from hashi.cli import main as cli_main
     for argv in (["deploy", "plan", "--target", "x"],
                  ["deploy", "backup", "--target", "x"],
                  ["deploy", "select-plan", "--json"],
@@ -67,22 +67,22 @@ def test_removed_cli_deploy_namespace_absent(capsys):
             cli_main(["--state", "/tmp/wb-no-such-state", *argv])
         assert exc.value.code == 2, argv
         capsys.readouterr()
-    for name in ("workspace_bridge.release", "workspace_bridge.release_bundle",
-                 "workspace_bridge.release_manifest", "workspace_bridge.staged_rollout",
-                 "workspace_bridge.pi_runtime_artifact", "workspace_bridge.docker_entrypoint"):
+    for name in ("hashi.release", "hashi.release_bundle",
+                 "hashi.release_manifest", "hashi.staged_rollout",
+                 "hashi.pi_runtime_artifact", "hashi.docker_entrypoint"):
         assert importlib.util.find_spec(name) is None, name
 
 
 def test_no_deployment_admission_dependency(tmp_path):
-    from workspace_bridge.cli import initialize
-    from workspace_bridge.service import Service
-    for name in ("workspace_bridge.selective_update",
-                 "workspace_bridge.backup",
-                 "workspace_bridge.deployment",
-                 "workspace_bridge.deployment_admission"):
+    from hashi.cli import initialize
+    from hashi.service import Service
+    for name in ("hashi.selective_update",
+                 "hashi.backup",
+                 "hashi.deployment",
+                 "hashi.deployment_admission"):
         assert importlib.util.find_spec(name) is None, name
         assert name not in sys.modules, name
-    source = Path("workspace_bridge/service.py").read_text()
+    source = Path("hashi/service.py").read_text()
     assert "deployment_admission" not in source
     assert "shared_admission" not in source
     assert "deployment_busy" not in source
@@ -101,15 +101,15 @@ def test_no_deployment_admission_dependency(tmp_path):
 def test_console_entry_points_exposed():
     points = {entry.name: entry.value for entry in
               importlib.metadata.entry_points(group="console_scripts")}
-    assert points.get("workspace-bridge") == "workspace_bridge.cli:main"
+    assert points.get("hashi") == "hashi.cli:main"
     # Existing Node entry retained for service internals/compatibility.
-    assert points.get("workspace-bridge-node") == \
-        "workspace_bridge.node_cli:main"
+    assert points.get("hashi-node") == \
+        "hashi.node_cli:main"
 
 
 def test_cli_version_and_nested_node_help(capsys):
-    from workspace_bridge import __version__
-    from workspace_bridge.cli import main as cli_main
+    from hashi import __version__
+    from hashi.cli import main as cli_main
     with pytest.raises(SystemExit) as exc:
         cli_main(["--version"])
     assert exc.value.code == 0
@@ -122,7 +122,7 @@ def test_cli_version_and_nested_node_help(capsys):
 
 
 def test_nested_node_init_writes_no_token(tmp_path, capsys):
-    from workspace_bridge.cli import main as cli_main
+    from hashi.cli import main as cli_main
     root = tmp_path / "projects" / "alpha"
     root.mkdir(parents=True)
     state = tmp_path / "nstate"

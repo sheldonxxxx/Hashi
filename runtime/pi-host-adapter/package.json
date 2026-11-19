@@ -1,24 +1,24 @@
 {
-  "name": "workspace-bridge-pi-host-adapter",
-  "version": "1.0.0",
+  "name": "hashi-pi-host-adapter",
+  "version": "1.1.0",
   "type": "module",
-  "description": "Pi runtime adapter for Workspace Bridge: let ChatGPT plan and review while Pi builds on your machine.",
+  "description": "Pi runtime adapter for Hashi: let ChatGPT plan and review while Pi builds on your machine.",
   "keywords": [
-    "workspace-bridge",
+    "hashi",
     "mcp",
     "chatgpt",
     "pi",
     "ai-agents",
     "coding-agent"
   ],
-  "homepage": "https://github.com/sheldonxxxx/workspace-bridge/blob/main/docs/RUNTIMES.md",
+  "homepage": "https://github.com/sheldonxxxx/hashi/blob/main/docs/RUNTIMES.md",
   "bugs": {
-    "url": "https://github.com/sheldonxxxx/workspace-bridge/issues"
+    "url": "https://github.com/sheldonxxxx/hashi/issues"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sheldonxxxx/workspace-bridge",
+    "url": "https://github.com/sheldonxxxx/hashi",
     "directory": "runtime/pi-host-adapter"
   },
   "publishConfig": {
@@ -26,7 +26,7 @@
     "provenance": false
   },
   "bin": {
-    "workspace-bridge-pi-adapter": "pi-adapter.mjs"
+    "hashi-pi-adapter": "pi-adapter.mjs"
   },
   "files": [
     "adapter.mjs",

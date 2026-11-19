@@ -4,7 +4,7 @@ References establish external interfaces, not proof of a real deployment.
 
 - OpenAI Secure MCP Tunnel: https://developers.openai.com/api/docs/guides/secure-mcp-tunnels — outbound private MCP connectivity, tunnel/workspace associations and permissions, ChatGPT connection flow.
 - Official tunnel client: https://github.com/openai/tunnel-client — installation and operation.
-- Official profile schema: https://github.com/openai/tunnel-client/blob/master/docs/configuration.md — `server_urls`, channels, `extra_headers`, `discovery_extra_headers`, `env:` secrets. Workspace Bridge uses one endpoint/channel.
+- Official profile schema: https://github.com/openai/tunnel-client/blob/master/docs/configuration.md — `server_urls`, channels, `extra_headers`, `discovery_extra_headers`, `env:` secrets. Hashi uses one endpoint/channel.
 - MCP Streamable HTTP: https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http — current protocol transport; this project retains legacy 2025 support in a small explicit adapter, not an externally certified SDK.
 - Codex official repository: https://github.com/openai/codex — app-server v2 protocol source for the dedicated Codex host adapter.
 - Python regex maintainer documentation: https://pypi.org/project/regex/ — matching timeout support used by bounded `grep`.

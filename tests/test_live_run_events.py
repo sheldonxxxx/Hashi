@@ -8,10 +8,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from workspace_bridge.adapter_events import AdapterEventReader, validate_event_page
-from workspace_bridge.runtime import RuntimeRejected, RuntimeUnavailable
-from workspace_bridge.security import BridgeError
-from workspace_bridge.wbrp import Descriptor
+from hashi.adapter_events import AdapterEventReader, validate_event_page
+from hashi.runtime import RuntimeRejected, RuntimeUnavailable
+from hashi.security import BridgeError
+from hashi.wbrp import Descriptor
 from test_run_coordinator import ADAPTER_ID, modern_env, _finish_test_run
 
 

@@ -1851,7 +1851,7 @@ export default function App() {
   }, [diagnostics, diagnosticsUnavailable, readyRoutes]);
   const page = sections.find((s) => s.id === section)!;
   useEffect(() => {
-    document.title = `${page.title} · Workspace Bridge`;
+    document.title = `${page.title} · Hashi`;
   }, [page.title]);
   const ready = auth === "ready" && !changingPassword;
   useEffect(() => {
@@ -2098,7 +2098,7 @@ export default function App() {
           <div className="login-intro">
             <pre className="boot-log" aria-hidden="true">
               <span>
-                <b>$</b> workspace-bridge manager
+                <b>$</b> hashi manager
               </span>
               <span>
                 <i>[ ok ]</i> loopback listener bound
@@ -2121,8 +2121,8 @@ export default function App() {
               One clear view.
             </h1>
             <p>
-              Workspace Bridge keeps access, handoffs, and running agents
-              visible in one local console.
+              Hashi keeps access, handoffs, and running agents visible in one
+              local console.
             </p>
           </div>
           <div className="login-panel">
@@ -2162,8 +2162,8 @@ export default function App() {
               </p>
             )}
             <small>
-              Forgot your password? Run workspace-bridge reset-admin-password on
-              the Bridge host.
+              Forgot your password? Run hashi reset-admin-password on the Bridge
+              host.
             </small>
           </div>
         </main>
@@ -3365,7 +3365,7 @@ export default function App() {
                     onClick={() =>
                       setTextDetail({
                         title: "Tunnel setup",
-                        content: `config_version: 1\ncontrol_plane:\n  tunnel_id: tunnel_REPLACE_WITH_YOUR_32_HEX_ID\n  api_key: env:CONTROL_PLANE_API_KEY\nmcp:\n  server_urls:\n    - channel: main\n      url: http://127.0.0.1:${status?.mcp_port}/mcp\n  extra_headers:\n    X-Bridge-Token: env:WORKSPACE_BRIDGE_TOKEN\n  discovery_extra_headers:\n    X-Bridge-Token: env:WORKSPACE_BRIDGE_TOKEN\nhealth:\n  listen_addr: 127.0.0.1:8790\n\nSave outside your project as bridge-tunnel.yaml. Supply keys locally, then run tunnel-client doctor and tunnel-client run.`,
+                        content: `config_version: 1\ncontrol_plane:\n  tunnel_id: tunnel_REPLACE_WITH_YOUR_32_HEX_ID\n  api_key: env:CONTROL_PLANE_API_KEY\nmcp:\n  server_urls:\n    - channel: main\n      url: http://127.0.0.1:${status?.mcp_port}/mcp\n  extra_headers:\n    X-Bridge-Token: env:HASHI_TOKEN\n  discovery_extra_headers:\n    X-Bridge-Token: env:HASHI_TOKEN\nhealth:\n  listen_addr: 127.0.0.1:8790\n\nSave outside your project as bridge-tunnel.yaml. Supply keys locally, then run tunnel-client doctor and tunnel-client run.`,
                       })
                     }
                   >
@@ -3505,7 +3505,7 @@ export default function App() {
       <Sheet open={mobileNav} onOpenChange={setMobileNav}>
         <SheetContent side="left" className="mobile-sheet">
           <SheetHeader>
-            <SheetTitle>Workspace Bridge</SheetTitle>
+            <SheetTitle>Hashi</SheetTitle>
             <SheetDescription>Local agent operations</SheetDescription>
           </SheetHeader>
           <nav aria-label="Mobile navigation">

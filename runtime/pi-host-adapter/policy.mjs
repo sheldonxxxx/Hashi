@@ -1,6 +1,6 @@
 // Bridge security profile rules for Pi.
 //
-// The JavaScript twin of workspace_bridge/security_profiles.py: the same
+// The JavaScript twin of hashi/security_profiles.py: the same
 // rule validation, revision, path and command evaluation. Both are checked
 // against tests/fixtures/profile_vectors.json, so a change here needs the
 // same change there.

@@ -18,7 +18,7 @@
 // Supported levels are DEBUG/INFO/WARNING/ERROR with INFO default.
 // Logging failures never throw and never alter request/session state.
 
-export const LOG_LEVEL_ENV = "WB_LOG_LEVEL";
+export const LOG_LEVEL_ENV = "HASHI_LOG_LEVEL";
 export const DEFAULT_LOG_LEVEL = "INFO";
 export const ALLOWED_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
 const LEVEL_RANK = { DEBUG: 0, INFO: 1, WARNING: 2, ERROR: 3 };

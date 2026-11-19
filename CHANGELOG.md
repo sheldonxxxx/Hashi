@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 1.1.0 — 2026-11-19
+
+- **Breaking:** the project is renamed from Workspace Bridge to Hashi. The
+  command is now `hashi` (`hashi-node` for the Node service), the Python
+  module is `hashi`, and the PyPI distribution is `hashi-app` (the import
+  package and command stay `hashi`). Migration: move
+  `~/.local/state/workspace-bridge` to `~/.local/state/hashi` (and
+  `~/.local/state/workspace-bridge-node` to
+  `~/.local/state/hashi-node`), move the isolated Pi profile
+  `~/.pi/workspace-bridge` to `~/.pi/hashi`, rename `WB_*` environment
+  variables to `HASHI_*` and `WORKSPACE_BRIDGE_TOKEN` to `HASHI_TOKEN`, then
+  reinstall services so their unit names and paths update.
+
 - Doctor exits zero after producing a report, regardless of its findings;
   invocation and report-generation errors remain nonzero. Offline workspace
   roots are unknown rather than incorrectly requiring administrator action.
@@ -136,7 +149,7 @@
   with the Bridge (same major version; same minor before 1.0).
 - **Breaking:** release bundles, manifests, staged rollout, Pi runtime
   artifacts, the Docker image and Compose files are removed, with
-  `workspace-bridge release` and `/api/system/versions`. Releases ship a
+  `hashi release` and `/api/system/versions`. Releases ship a
   wheel and the Pi npm package; `--version`, `/api/status` and
   `doctor --json` (`versions`) report versions, and doctor warns when a
   Node's version differs from the Bridge's.
@@ -209,7 +222,7 @@
   not take from `defaultMode` under its SDK. Bypass mode stays disabled.
 - `adapter set <adapter-id> --set KEY=VALUE` changes an adapter's plugin
   settings in place, keeping its ID and routes.
-- `workspace-bridge plugin test <manifest|id>` runs the plugin conformance
+- `hashi plugin test <manifest|id>` runs the plugin conformance
   kit in a temporary folder: protocol checks by default, and with `--live`
   runs, interactions, events, recovery without replay, and continuation.
   It exits non-zero unless the plugin passes.
@@ -230,12 +243,12 @@
   a restart, and a run that names no model uses the thread's own model
   instead of the last run's.
 - Breaking: agents run only as Node-supervised plugins. The HTTP adapter
-  services are gone: the `workspace-bridge adapter` command (init, serve,
+  services are gone: the `hashi adapter` command (init, serve,
   show-token, service, open-session, reclaim-session), the
-  `workspace-bridge-claude-adapter`, `-codex-adapter` and
+  `hashi-claude-adapter`, `-codex-adapter` and
   `-opencode-adapter` executables, adapter tokens and ports, and the Pi
-  HTTP server (`workspace-bridge-pi-adapter` now requires `--stdio`). Re-add
-  each agent with `workspace-bridge node adapter add <plugin> --name
+  HTTP server (`hashi-pi-adapter` now requires `--stdio`). Re-add
+  each agent with `hashi node adapter add <plugin> --name
   <name>`. Existing HTTP adapter rows stay visible so their run history is
   kept, but can only be renamed, disabled or deleted; runs on them fail
   with `adapter_removed`. The Manager API accepts only plugin adapters.
@@ -258,13 +271,13 @@
   a Bridge profile is chosen. Codex routes moved to a profile Codex cannot
   enforce must be switched to `trusted` or `native`, which the Manager's
   route security dialog now offers.
-- Breaking: `workspace-bridge support bundle` is removed. Use
-  `workspace-bridge doctor --json` and the service and plugin logs.
+- Breaking: `hashi support bundle` is removed. Use
+  `hashi doctor --json` and the service and plugin logs.
 
 - Agent plugins (Agent Protocol v2): a Node can run Claude Code, Codex,
   OpenCode and Pi as supervised child processes speaking JSON-RPC over
   stdio, with no adapter port, token or service. Add one with
-  `workspace-bridge node adapter add <plugin> --name <name>` (or
+  `hashi node adapter add <plugin> --name <name>` (or
   `local-node adapter add`), or through the Manager API with a `plugin`
   field; `GET /api/nodes/{id}/plugins` lists what a Node can run. The Node
   restarts a crashed plugin with backoff, buffers pushed events for the
@@ -283,23 +296,23 @@
   per run. A cancel reaches the runtime without waiting in any of these
   queues. Queued calls still authenticate when their turn comes. The Node also serializes checked writes per workspace.
 
-- `workspace-bridge service install|status|start|stop|restart|uninstall`
-  runs the Bridge itself as a LaunchAgent (`com.workspace-bridge.bridge`) or
-  systemd unit (`workspace-bridge.service`), reusing the Node's hardened
+- `hashi service install|status|start|stop|restart|uninstall`
+  runs the Bridge itself as a LaunchAgent (`com.hashi.bridge`) or
+  systemd unit (`hashi.service`), reusing the Node's hardened
   service lifecycle. Settings come from a private `bridge.env` in the state
-  folder, limited to known `WB_*` keys; real environment variables win.
+  folder, limited to known `HASHI_*` keys; real environment variables win.
 - The gateway records paired Node connection state. `doctor` reports
   connected, disconnected, never connected or not reported, and shows paired
   workspace roots as unknown instead of failed. `node service status` reads
   the Node's own `link-status.json`.
 - Paired Nodes: a Node can dial the Bridge instead of listening. The Bridge
   runs a TLS Node gateway (default port 8767, loopback unless
-  `WB_NODE_GATEWAY_HOST` is set) and issues single-use pairing strings with
-  `workspace-bridge pairing create` or `POST /api/nodes/pairings`; the Node
-  redeems one with `workspace-bridge node pair`. Nodes pin the gateway
+  `HASHI_NODE_GATEWAY_HOST` is set) and issues single-use pairing strings with
+  `hashi pairing create` or `POST /api/nodes/pairings`; the Node
+  redeems one with `hashi node pair`. Nodes pin the gateway
   certificate and authenticate with an Ed25519 key; no inbound port or Node
   token is needed, and reconnecting keeps runs alive.
-- `workspace-bridge local-node enable --allow-root <path>` runs the Bridge
+- `hashi local-node enable --allow-root <path>` runs the Bridge
   host's Node inside the Bridge process, so one machine needs one service.
 - Every Node request now runs in a worker thread through one shared handler,
   so a slow adapter or filesystem call no longer blocks the Node.
@@ -358,8 +371,8 @@
 First release from the public repository.
 
 - Claude Code runtime: a `claude` adapter type driven through the Claude Agent
-  SDK (`uv tool install 'workspace-bridge[claude]'`, executable
-  `workspace-bridge-claude-adapter`, `workspace-bridge adapter init --runtime
+  SDK (`uv tool install 'hashi[claude]'`, executable
+  `hashi-claude-adapter`, `hashi adapter init --runtime
   claude`) with Bridge-managed `edits`/`shell`/`web`/`extensions` security
   profiles, approvals through Bridge interactions, run-scoped usage, and
   Manager support. Claude Code loads its user, project and local settings,

@@ -19,7 +19,7 @@ LEGACY = "2025-11-25"
 # Pre-runtime core tools that must always be advertised. The server may expose
 # additional tools (Runtime Protocol agent tools, Git evidence); assert their
 # presence as a subset so this script does not go stale on every addition.
-# Keep in sync with TOOLS in workspace_bridge/api.py and tests/test_api.py.
+# Keep in sync with TOOLS in hashi/api.py and tests/test_api.py.
 CORE_TOOLS = frozenset({
     "read_project_lead_skill", "list_workspaces", "workspace_info",
     "list_dir", "read_file", "glob", "grep_files", "prepare_handoff",
@@ -93,12 +93,12 @@ def main() -> int:
     args = parser.parse_args()
     try:
         validate_url(args.url)
-        token = os.environ.get("WORKSPACE_BRIDGE_TOKEN") or getpass.getpass("Shared bridge token: ")
+        token = os.environ.get("HASHI_TOKEN") or getpass.getpass("Shared bridge token: ")
         if not token or "\n" in token or "\r" in token:
             raise ValueError("A nonempty, single-line token is required")
         client = Client(args.url, token)
         initialized = client.call("initialize", {"protocolVersion": LEGACY, "capabilities": {},
-            "clientInfo": {"name": "workspace-bridge-smoke", "version": "0.1.0"}})
+            "clientInfo": {"name": "hashi-smoke", "version": "0.1.0"}})
         if initialized.get("protocolVersion") != LEGACY:
             raise ValueError("Legacy version negotiation failed")
         client.call("notifications/initialized", notification=True)

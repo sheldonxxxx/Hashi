@@ -52,7 +52,7 @@ The project-lead skill is not a tool. The server declares
 `capabilities.extensions["io.modelcontextprotocol/skills"]` alongside `capabilities.resources` and serves the
 bounded static subset of the draft Skills extension:
 
-- `skills/list` returns one entry: `uri` (`skill://workspace-bridge/project-lead/SKILL.md`),
+- `skills/list` returns one entry: `uri` (`skill://hashi/project-lead/SKILL.md`),
   parsed `frontmatter` (`name`, `description`, `version`), and `resources` with a
   `sha256:` digest of the UTF-8 content. No pagination.
 - `skills/get` with that `uri` returns the entry under `skill` (SEP-2640) and also
@@ -70,7 +70,7 @@ state; byte-identical skills produce no new ZIP or version bump. The MCP Skills
 extension remains available. `list_workspaces` and
 `workspace_info` return a small `project_lead_skill` pointer (name, version,
 URI), not a repeated copy. Canonical content:
-`workspace_bridge/skills/project-lead/SKILL.md`, packaged in source
+`hashi/skills/project-lead/SKILL.md`, packaged in source
 distributions and wheels. The skill is advisory and cannot expand permissions
 or ensure model compliance. It is not part of the release/build ID.
 

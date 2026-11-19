@@ -1,7 +1,7 @@
 """Deterministic callback receiver; no network or ambient credentials."""
 import base64
 import json
-from workspace_bridge.webhook_transport import CallbackError, CallbackResponse
+from hashi.webhook_transport import CallbackError, CallbackResponse
 
 TEST_SECRET = 'whsec_' + base64.b64encode(b'event-test-key-000000000000000000').decode()
 TEST_URL = 'https://receiver.example/mcp-events/callback'

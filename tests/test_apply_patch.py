@@ -9,10 +9,10 @@ import httpx
 import pytest
 
 from admin_helpers import admin_cookie
-from workspace_bridge import edit_journal
+from hashi import edit_journal
 from mcp_helpers import McpTransport
-from workspace_bridge.api import TOOLS, make_admin, make_mcp
-from workspace_bridge.security import BridgeError, allowed, digest, validate_excludes
+from hashi.api import TOOLS, make_admin, make_mcp
+from hashi.security import BridgeError, allowed, digest, validate_excludes
 
 SECRET = 'api_key = "sk-proj-abcdefghijklmnopqrstuvwx"'
 

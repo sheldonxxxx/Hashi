@@ -6,11 +6,11 @@ import time
 
 import pytest
 
-from workspace_bridge.event_broker import EventBroker, FINISHED, NEEDS_ATTENTION
-from workspace_bridge.notifications import NotificationEvent
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import uid
-from workspace_bridge.webhook_transport import CallbackError
+from hashi.event_broker import EventBroker, FINISHED, NEEDS_ATTENTION
+from hashi.notifications import NotificationEvent
+from hashi.security import BridgeError
+from hashi.service import uid
+from hashi.webhook_transport import CallbackError
 from event_fakes import CallbackReceiver, TEST_SECRET, TEST_URL
 
 
@@ -260,7 +260,7 @@ def test_notification_rollback_does_not_queue_delivery(broker_env):
 
 def test_capacity_and_invalid_filters(broker_env, monkeypatch):
     env = broker_env
-    monkeypatch.setattr('workspace_bridge.event_broker.MAX_SUBSCRIPTIONS', 1)
+    monkeypatch.setattr('hashi.event_broker.MAX_SUBSCRIPTIONS', 1)
     subscribe(env)
     with pytest.raises(BridgeError) as error:
         subscribe(env, name=NEEDS_ATTENTION)

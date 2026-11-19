@@ -349,7 +349,7 @@ test("shell=ask bash start persists ask and survives trusted UI re-evaluation", 
   assert.ok(preflight.alwaysPattern.includes(preflight.commandHash));
   // Trusted UI ask with the exact marker/options re-evaluates the same
   // exact command+timeout and becomes answerable (no fail-closed cancel).
-  const selectPromise = entry.session.boundUiContext.select("WB_PERMISSION_V1:sh-ask",
+  const selectPromise = entry.session.boundUiContext.select("HASHI_PERMISSION_V1:sh-ask",
     [OPTION_ONCE, OPTION_ALWAYS, OPTION_REJECT]);
   const tracked = trackSelect(selectPromise);
   await new Promise((resolve) => setImmediate(resolve));
@@ -392,7 +392,7 @@ test("shell always decision stays exact-command scoped and deny/malformed stay c
   emit({ type: "tool_execution_start", toolCallId: "sh-bad", toolName: "bash", args: {} });
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(entry.preflights.get("sh-bad")?.effect, "deny");
-  assert.equal(await ui.select("WB_PERMISSION_V1:sh-bad",
+  assert.equal(await ui.select("HASHI_PERMISSION_V1:sh-bad",
     [OPTION_ONCE, OPTION_ALWAYS, OPTION_REJECT]), undefined);
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(await adapter.listPermissions(projects.app, session.id), []);
@@ -400,7 +400,7 @@ test("shell always decision stays exact-command scoped and deny/malformed stay c
   emit({ type: "tool_execution_start", toolCallId: "sh-always", toolName: "bash",
     args: { command: "echo always-ok", timeout: 5 } });
   await new Promise((resolve) => setImmediate(resolve));
-  const tracked = trackSelect(ui.select("WB_PERMISSION_V1:sh-always",
+  const tracked = trackSelect(ui.select("HASHI_PERMISSION_V1:sh-always",
     [OPTION_ONCE, OPTION_ALWAYS, OPTION_REJECT]));
   await new Promise((resolve) => setImmediate(resolve));
   const pending = await adapter.listPermissions(projects.app, session.id);
@@ -435,7 +435,7 @@ test("shell always decision stays exact-command scoped and deny/malformed stay c
   const denied = await adapter2.readExecutions(projects.app, session2.id, { after: 0, limit: 10 });
   const deniedById = Object.fromEntries(denied.updates.map((u) => [u.tool_call_id, u]));
   assert.equal(deniedById["sh-deny"].permission_effect, "deny");
-  assert.equal(await entry2.session.boundUiContext.select("WB_PERMISSION_V1:sh-deny",
+  assert.equal(await entry2.session.boundUiContext.select("HASHI_PERMISSION_V1:sh-deny",
     [OPTION_ONCE, OPTION_ALWAYS, OPTION_REJECT]), undefined);
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(await adapter2.listPermissions(projects.app, session2.id), []);

@@ -9,8 +9,8 @@ import httpx
 import pytest
 
 from mcp_helpers import argument_error, McpTransport
-from workspace_bridge.api import TOOLS, make_mcp
-from workspace_bridge.security import BridgeError
+from hashi.api import TOOLS, make_mcp
+from hashi.security import BridgeError
 
 
 def _git(root: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess:
@@ -27,7 +27,7 @@ def _git(root: Path, *args: str, check: bool = True) -> subprocess.CompletedProc
 
 def _repo(root: Path) -> str:
     _git(root, "init", "-q", "--initial-branch=main")
-    _git(root, "config", "user.name", "Workspace Bridge Test")
+    _git(root, "config", "user.name", "Hashi Test")
     _git(root, "config", "user.email", "bridge-test@example.invalid")
     (root / "tracked.txt").write_text("base\n")
     _git(root, "add", "tracked.txt")
@@ -67,7 +67,7 @@ def test_metadata_validation_does_not_depend_on_object_database_entry_count(env,
     # These are the former recursive walk limits. Setting them below zero
     # deterministically models a repository whose object/ref inventory would
     # exceed the old bound without creating tens of thousands of test files.
-    import workspace_bridge.git_evidence as git_evidence
+    import hashi.git_evidence as git_evidence
 
     monkeypatch.setattr(git_evidence, "MAX_METADATA_ENTRIES", -1, raising=False)
     monkeypatch.setattr(git_evidence, "MAX_METADATA_SECONDS", -1, raising=False)
@@ -150,7 +150,7 @@ def test_status_paginates_and_uses_stable_hash_when_unchanged(env):
 
 def test_staged_diff_supports_an_unborn_repository(env):
     _git(env["root"], "init", "-q", "--initial-branch=main")
-    _git(env["root"], "config", "user.name", "Workspace Bridge Test")
+    _git(env["root"], "config", "user.name", "Hashi Test")
     _git(env["root"], "config", "user.email", "bridge-test@example.invalid")
     (env["root"] / "first.txt").write_text("initial staged content\n")
     _git(env["root"], "add", "first.txt")
@@ -362,7 +362,7 @@ def test_unparseable_filter_sections_fail_closed(env, section):
 
 
 def test_diff_output_time_bounds_and_git_errors_are_sanitized(env, tmp_path):
-    from workspace_bridge.git_evidence import _run
+    from hashi.git_evidence import _run
 
     scripts = tmp_path / "git-shims"
     scripts.mkdir()

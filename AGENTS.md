@@ -1,16 +1,16 @@
 # AGENTS.md
 
 Instructions for AI/coding agents contributing to this repository. For
-installing or configuring Workspace Bridge on behalf of a user, follow
+installing or configuring Hashi on behalf of a user, follow
 [docs/AGENT_SETUP.md](docs/AGENT_SETUP.md). For human contributor detail,
 see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Source map
 
-- `workspace_bridge/` — MCP service, Manager API, CLI, Node service,
+- `hashi/` — MCP service, Manager API, CLI, Node service,
   agent plugins and their supervisor, run coordination, diagnostics, notifications.
 - `web/` — Manager UI (build output packaged under
-  `workspace_bridge/static/dist/`).
+  `hashi/static/dist/`).
 - `runtime/pi-host-adapter/` — Pi plugin (npm package).
 - `tests/test_*.py`, `runtime/pi-host-adapter/test/*.test.mjs`,
   `web/tests/*.spec.ts` — test suites.
@@ -41,7 +41,7 @@ Read the relevant source, callers, and tests with the normal file tools
 before changing behavior. Check current `--help` output and package `bin`
 entries before documenting a command. Cross-check claimed tool names,
 counts, scopes, route admission, continuation rules, service paths, logging
-bounds, and image limits against `workspace_bridge/` and tests. If docs
+bounds, and image limits against `hashi/` and tests. If docs
 expose a real source inconsistency, report it instead of changing
 architecture outside the task scope.
 
@@ -56,7 +56,7 @@ Pick checks by what the change touches. These mirror the CI jobs in
 
 | Change touches | Run |
 | --- | --- |
-| `workspace_bridge/`, `scripts/`, `tests/` | `uv run pytest -q tests/test_<area>.py`, then `uv run pytest -q` |
+| `hashi/`, `scripts/`, `tests/` | `uv run pytest -q tests/test_<area>.py`, then `uv run pytest -q` |
 | `web/` | `npm --prefix web run lint`, `npm --prefix web run format:check`, `npm --prefix web run build`; `npm --prefix web run test:e2e` only if a Playwright browser is already installed |
 | `runtime/pi-host-adapter/` | `npm --prefix runtime/pi-host-adapter test` |
 | Tracked Markdown | `uv run pytest -q tests/test_public_docs.py` |
@@ -79,8 +79,8 @@ cd web && npm run lint && npm run format:check && npm run build
 CLI smoke that mutates nothing:
 
 ```sh
-uv run workspace-bridge --help
-uv run workspace-bridge doctor --offline
+uv run hashi --help
+uv run hashi doctor --offline
 ```
 
 ## Documentation consistency
@@ -105,7 +105,7 @@ Commit, push, tag, or open a pull request only when the task authorizes it
 - Add user-visible behavior changes to the `## Unreleased` section of
   [CHANGELOG.md](CHANGELOG.md). Internal refactors, test-only changes, and
   doc wording fixes don't need an entry.
-- `workspace_bridge/static/dist/` is tracked. After any `web/` source change,
+- `hashi/static/dist/` is tracked. After any `web/` source change,
   run `npm --prefix web run build` and commit the regenerated assets in the
   same commit, removing stale hashed files the build replaced.
 - Do not bump versions, edit release metadata, or hand-edit lockfiles unless

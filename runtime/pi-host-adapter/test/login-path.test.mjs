@@ -24,7 +24,7 @@ function fakeSpawn(stdout, { status = 0, error = null } = {}) {
     assert.ok(args.includes("-c"));
     const probe = args[args.length - 1];
     assert.ok(probe.includes("printf"));
-    assert.ok(probe.includes("__WB_LOGIN_PATH_BEGIN__"));
+    assert.ok(probe.includes("__HASHI_LOGIN_PATH_BEGIN__"));
     assert.ok(probe.includes(">&3"));
     assert.ok(typeof options.timeout === "number");
     // Explicit hard bound at the capture boundary: dedicated fd-3 pipe plus
@@ -44,7 +44,7 @@ function fakeSpawn(stdout, { status = 0, error = null } = {}) {
 test("success validates and summary exposes only safe fields", () => {
   const result = resolveLoginPathSync({
     shellOverride: "/bin/zsh",
-    spawnSyncFn: fakeSpawn("__WB_LOGIN_PATH_BEGIN__/usr/bin:/bin:/opt/tools/bin__WB_LOGIN_PATH_END__"),
+    spawnSyncFn: fakeSpawn("__HASHI_LOGIN_PATH_BEGIN__/usr/bin:/bin:/opt/tools/bin__HASHI_LOGIN_PATH_END__"),
   });
   assert.equal(result.resolved, true);
   assert.equal(result.path, "/usr/bin:/bin:/opt/tools/bin");
@@ -72,7 +72,7 @@ test("interactive-login invocation captures interactive-only PATH (regression)",
         ? "/usr/bin:/bin:/interactive/tools"
         : "/usr/bin:/bin";
       return {
-        stdout: `__WB_LOGIN_PATH_BEGIN__${path}__WB_LOGIN_PATH_END__`,
+        stdout: `__HASHI_LOGIN_PATH_BEGIN__${path}__HASHI_LOGIN_PATH_END__`,
         status: 0,
       };
     },
@@ -100,7 +100,7 @@ test("unsupported shells fail safely and fish uses the documented join form", ()
 test("noisy shell output is isolated to the marked value", () => {
   const result = resolveLoginPathSync({
     shellOverride: "/bin/zsh",
-    spawnSyncFn: fakeSpawn("Welcome\nmotd\n__WB_LOGIN_PATH_BEGIN__/usr/bin:/bin__WB_LOGIN_PATH_END__\nbye\n"),
+    spawnSyncFn: fakeSpawn("Welcome\nmotd\n__HASHI_LOGIN_PATH_BEGIN__/usr/bin:/bin__HASHI_LOGIN_PATH_END__\nbye\n"),
   });
   assert.equal(result.resolved, true);
   assert.equal(result.path, "/usr/bin:/bin");
@@ -173,7 +173,7 @@ test("invalid paths are rejected with safe codes", () => {
     assert.equal(checked.code, code);
     const result = resolveLoginPathSync({
       shellOverride: "/bin/sh",
-      spawnSyncFn: fakeSpawn(`__WB_LOGIN_PATH_BEGIN__${candidate}__WB_LOGIN_PATH_END__`),
+      spawnSyncFn: fakeSpawn(`__HASHI_LOGIN_PATH_BEGIN__${candidate}__HASHI_LOGIN_PATH_END__`),
     });
     assert.equal(result.resolved, false);
     assert.equal(result.path, null);
@@ -182,14 +182,14 @@ test("invalid paths are rejected with safe codes", () => {
 });
 
 test("only PATH is imported and shell basename is safe", () => {
-  const target = { PATH: "/inherited", WB_RUNTIME_TOKEN: "tok", HOME: "/home/u" };
+  const target = { PATH: "/inherited", HASHI_RUNTIME_TOKEN: "tok", HOME: "/home/u" };
   const result = resolveLoginPathSync({
     shellOverride: "/bin/zsh",
-    spawnSyncFn: fakeSpawn("__WB_LOGIN_PATH_BEGIN__/usr/bin:/bin__WB_LOGIN_PATH_END__"),
+    spawnSyncFn: fakeSpawn("__HASHI_LOGIN_PATH_BEGIN__/usr/bin:/bin__HASHI_LOGIN_PATH_END__"),
   });
   applyLoginPathResult(result, target);
   assert.equal(target.PATH, "/usr/bin:/bin");
-  assert.equal(target.WB_RUNTIME_TOKEN, "tok");
+  assert.equal(target.HASHI_RUNTIME_TOKEN, "tok");
   assert.equal(target.HOME, "/home/u");
   assert.equal(shellBasename("/bin/zsh"), "zsh");
   assert.equal(shellBasename("/weird;`rm`"), "weirdrm");
@@ -205,7 +205,7 @@ test("Pi startup resolves login PATH before Pi binary probing and applies only P
     resolved: true, path: "/usr/bin:/bin:/login/tools",
     shell: "/bin/zsh", shellBasename: "zsh", entryCount: 3, code: "ok",
   };
-  const built = buildMain({ WB_PI_PROJECTS_DIR: "", WB_LOG_LEVEL: "INFO" }, {
+  const built = buildMain({ HASHI_PI_PROJECTS_DIR: "", HASHI_LOG_LEVEL: "INFO" }, {
     resolveLoginPathFn: () => {
       calls.push("resolve");
       return fakeResolved;
@@ -225,7 +225,7 @@ test("Pi startup resolves login PATH before Pi binary probing and applies only P
 
 test("Pi startup keeps inherited PATH when resolution fails", () => {
   const target = { PATH: "/inherited" };
-  const built = buildMain({ WB_PI_PROJECTS_DIR: "", WB_LOG_LEVEL: "INFO" }, {
+  const built = buildMain({ HASHI_PI_PROJECTS_DIR: "", HASHI_LOG_LEVEL: "INFO" }, {
     resolveLoginPathFn: () => ({
       resolved: false, path: null, shell: "/bin/zsh",
       shellBasename: "zsh", entryCount: 0, code: "timeout",

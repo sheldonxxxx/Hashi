@@ -198,7 +198,7 @@ export async function askPermission(adapter, directory, sessionId, { toolCallId,
   entry.session.emit({ type: "tool_execution_start", toolCallId, toolName, args });
   await new Promise((resolve) => setImmediate(resolve));
   const selectPromise = entry.session.boundUiContext.select(
-    `WB_PERMISSION_V1:${toolCallId}`, options);
+    `HASHI_PERMISSION_V1:${toolCallId}`, options);
   // select() is synchronous up to the suspension point, but await one
   // macrotask so the pending record is always visible afterwards.
   await new Promise((resolve) => setImmediate(resolve));

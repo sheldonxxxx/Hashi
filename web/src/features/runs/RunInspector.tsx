@@ -292,8 +292,8 @@ export function RunInspector({
                       Open the idle session from a terminal on its Node host:
                     </p>
                     <code>
-                      workspace-bridge adapter --state &lt;adapter-state&gt;
-                      open-session {current.runtime_conversation_id}
+                      hashi adapter --state &lt;adapter-state&gt; open-session{" "}
+                      {current.runtime_conversation_id}
                     </code>
                     <p>
                       Native handoff returns control to you. Rebind its security

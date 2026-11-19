@@ -12,12 +12,12 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import pytest
-from workspace_bridge import security_profiles as sp
-from workspace_bridge import __version__, wbrp
-from workspace_bridge.claude_host_adapter import (
+from hashi import security_profiles as sp
+from hashi import __version__, wbrp
+from hashi.claude_host_adapter import (
     AdapterFailure, ClaudeHostAdapter, _normalize_claude_usage,
     allowed_tools, decide_tool_use, parse_permission_mode, parse_setting_sources)
-from workspace_bridge.plugin_host import invoke
+from hashi.plugin_host import invoke
 
 READ_ONLY = sp.BUILTINS["read-only"]
 REVIEWED = sp.BUILTINS["reviewed"]
@@ -565,7 +565,7 @@ def test_sdk_connect_failure_fails_closed(claude):
     original = sdk.ClaudeSDKClient.connect
 
     async def boom(self):
-        raise RuntimeError("cli exploded at /Users/private WB_RUNTIME_TOKEN=secret-token")
+        raise RuntimeError("cli exploded at /Users/private HASHI_RUNTIME_TOKEN=secret-token")
 
     sdk.ClaudeSDKClient.connect = boom
     try:
@@ -586,7 +586,7 @@ def test_missing_sdk_is_a_bounded_unavailable_error(tmp_path, monkeypatch):
         monkeypatch.setitem(__import__("sys").modules, "claude_agent_sdk", None)
         with pytest.raises(AdapterFailure) as raised:
             adapter.descriptor()
-        assert raised.value.status == 503 and "workspace-bridge[claude]" in str(raised.value)
+        assert raised.value.status == 503 and "hashi[claude]" in str(raised.value)
     finally:
         adapter.close()
 

@@ -8,12 +8,12 @@ import sqlite3
 import pytest
 import httpx
 
-from workspace_bridge.api import make_admin
-from workspace_bridge.cli import initialize
-from workspace_bridge.diagnostics import MAX_ROUTES
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import Service
-from workspace_bridge.wbrp import CORE_FEATURES, Descriptor
+from hashi.api import make_admin
+from hashi.cli import initialize
+from hashi.diagnostics import MAX_ROUTES
+from hashi.security import BridgeError
+from hashi.service import Service
+from hashi.wbrp import CORE_FEATURES, Descriptor
 from conftest import attach_test_node
 
 

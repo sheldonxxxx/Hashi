@@ -1,7 +1,7 @@
-# Workspace Bridge manager
+# Hashi manager
 
 React and TypeScript UI for the loopback administrator console. Vite builds
-into `workspace_bridge/static/dist`; Starlette serves those assets and the
+into `hashi/static/dist`; Starlette serves those assets and the
 API on the same origin. Component files under `src/components/ui` are owned
 source.
 

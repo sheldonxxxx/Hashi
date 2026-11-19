@@ -2,7 +2,7 @@ import base64
 import json
 import httpx
 import pytest
-from workspace_bridge.api import make_mcp, TOOLS
+from hashi.api import make_mcp, TOOLS
 from mcp_helpers import McpTransport, PREFIX, MODERN
 
 async def modern_call(env, method='server/discover', params=None, *, header_changes=None, body_changes=None):
@@ -27,7 +27,7 @@ async def test_modern_discovery_no_initialize(env):
     result = response.json()['result']
     assert response.status_code == 200
     assert result['resultType'] == 'complete' and MODERN in result['supportedVersions']
-    assert result['_meta'][PREFIX+'serverInfo']['name'] == 'workspace-bridge'
+    assert result['_meta'][PREFIX+'serverInfo']['name'] == 'hashi'
 
 async def test_modern_requests_record_their_protocol_version(env):
     await modern_call(env)

@@ -1,13 +1,13 @@
 """The runtime client validates what a plugin returns, whatever the transport."""
 import pytest
 
-from workspace_bridge import security_profiles as sp
-from workspace_bridge.codex_host_adapter import AdapterFailure, CodexHostAdapter
-from workspace_bridge.node_client import NodeRuntimeAdapterProxy
-from workspace_bridge.plugin_host import LocalPluginTransport
-from workspace_bridge.runtime import RuntimeUnavailable
-from workspace_bridge.security import BridgeError
-from workspace_bridge.wbrp import Descriptor, RuntimeClient
+from hashi import security_profiles as sp
+from hashi.codex_host_adapter import AdapterFailure, CodexHostAdapter
+from hashi.node_client import NodeRuntimeAdapterProxy
+from hashi.plugin_host import LocalPluginTransport
+from hashi.runtime import RuntimeUnavailable
+from hashi.security import BridgeError
+from hashi.wbrp import Descriptor, RuntimeClient
 from test_codex_host_adapter import FakeCodexRpc
 
 SECURITY = sp.wire("trusted", sp.BUILTINS["trusted"])

@@ -36,7 +36,7 @@ MARKERS = (
     "M4_",
     "start_opencode",
     "start_pi.sh",
-    "com.workspace-bridge.pi-host-adapter",
+    "com.hashi.pi-host-adapter",
     "deploy plan",
     "sync_adapters_local",
     "next milestone",
@@ -115,8 +115,8 @@ def test_agent_setup_covers_both_runtimes():
 
 
 def test_public_docs_never_reference_removed_adapter_services():
-    removed = ("workspace-bridge adapter --state", "workspace-bridge-codex-adapter",
-               "workspace-bridge-claude-adapter", "workspace-bridge-opencode-adapter",
+    removed = ("hashi adapter --state", "hashi-codex-adapter",
+               "hashi-claude-adapter", "hashi-opencode-adapter",
                "support bundle --output", "reclaim-session", "X-Runtime-Token",
                "show-token", "docker compose", "write_image", "grep_files",
                "prepare_handoff", "read_handoff", "start_agent_run", "write_file",

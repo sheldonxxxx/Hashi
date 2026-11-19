@@ -311,14 +311,14 @@ def test_release_cannot_run_on_pr():
 def test_pi_package_publish_inventory():
     pkg = json.loads(PI_PKG.read_text())
     assert pkg.get("private") is not True
-    assert pkg.get("name") == "workspace-bridge-pi-host-adapter"
+    assert pkg.get("name") == "hashi-pi-host-adapter"
     repo = pkg.get("repository", {})
-    assert repo.get("url") == "https://github.com/sheldonxxxx/workspace-bridge"
+    assert repo.get("url") == "https://github.com/sheldonxxxx/hashi"
     assert repo.get("directory") == "runtime/pi-host-adapter"
     pub = pkg.get("publishConfig", {})
     assert pub.get("access") == "public"
     # Stable package-manager-provided executable for the adapter lifecycle.
-    assert pkg.get("bin") == {"workspace-bridge-pi-adapter": "pi-adapter.mjs"}
+    assert pkg.get("bin") == {"hashi-pi-adapter": "pi-adapter.mjs"}
     entry = REPO / "runtime" / "pi-host-adapter" / "pi-adapter.mjs"
     assert entry.is_file()
     assert entry.read_text().startswith("#!/usr/bin/env node")
@@ -371,7 +371,9 @@ def test_release_assets_use_gh_upload_no_new_tag():
     jobs = _load_yml(RELEASE_YML).get("jobs", {})
     assets = jobs["release-assets"]
     assert "gh release upload" in text
-    assert "workspace_bridge-${VERSION}-py3-none-any.whl" in text
+    assert "hashi_app-${VERSION}-py3-none-any.whl" in text
+    assert "hashi-${VERSION}-py3-none-any.whl" not in text
+    assert "workspace_bridge-${VERSION}-py3-none-any.whl" not in text
     assert "workspace-bridge-${VERSION}-py3-none-any.whl" not in text
     assert "GITHUB_TOKEN" in text or "github.token" in text
     assert "gh release create" not in text
@@ -393,7 +395,7 @@ def test_pi_bin_is_packaged():
 
 
 def test_python_package_ships_plugins_not_adapter_commands():
-    from workspace_bridge.plugin_protocol import builtin_manifests
+    from hashi.plugin_protocol import builtin_manifests
     assert set(builtin_manifests()) == {"claude", "codex", "opencode", "pi"}
     text = (REPO / "pyproject.toml").read_text()
     # Agents run as Node-supervised plugins; no adapter console scripts.
@@ -406,25 +408,25 @@ def test_python_package_ships_plugins_not_adapter_commands():
 def test_release_workflow_uses_release_cli_and_packaging_smoke():
     text = RELEASE_YML.read_text()
     # Old deploy CLI names are gone from release automation.
-    assert "workspace-bridge deploy" not in text
+    assert "hashi deploy" not in text
     assert "deploy select-plan" not in text
     assert "deploy backup" not in text
     assert "deploy plan" not in text
     # The wheel is built once by uv; no release bundle CLI remains.
-    assert "workspace-bridge release" not in text
+    assert "hashi release" not in text
     assert "uv build --wheel" in text
     # Packaging smoke checks the exact staged wheel in a clean environment.
     assert "entry_points.txt" in text
-    assert "workspace_bridge.cli:main" in text
-    assert "workspace_bridge.node_cli:main" in text
-    assert "workspace_bridge/plugins/" in text
-    assert "workspace_bridge/opencode_permission_plugin/index.mjs" in text
-    assert "workspace_bridge/opencode_permission_plugin/package.json" in text
+    assert "hashi.cli:main" in text
+    assert "hashi.node_cli:main" in text
+    assert "hashi/plugins/" in text
+    assert "hashi/opencode_permission_plugin/index.mjs" in text
+    assert "hashi/opencode_permission_plugin/package.json" in text
     assert "uv pip install --python" in text
-    assert '"$VENV/bin/workspace-bridge" --version)" = "${RELEASE_TAG#v}"' in text
-    assert '"$VENV/bin/workspace-bridge" node --help' in text
-    assert '"$VENV/bin/workspace-bridge-node" --help' in text
-    assert '"$VENV/bin/workspace-bridge-node" plugin --help' in text
+    assert '"$VENV/bin/hashi" --version)" = "${RELEASE_TAG#v}"' in text
+    assert '"$VENV/bin/hashi" node --help' in text
+    assert '"$VENV/bin/hashi-node" --help' in text
+    assert '"$VENV/bin/hashi-node" plugin --help' in text
     assert "builtin_manifests" in text
     # Agent adapters are plugins now, never console scripts or a CLI namespace.
     assert "adapter --help" not in text and "_host_adapter:main" not in text

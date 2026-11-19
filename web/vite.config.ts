@@ -5,7 +5,7 @@ import path from "node:path";
 
 function scrollLockWhitespacePlugin(): Plugin {
   return {
-    name: "workspace-bridge-scroll-lock-whitespace",
+    name: "hashi-scroll-lock-whitespace",
     apply: "build",
     transform(code, id) {
       if (
@@ -32,5 +32,5 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), scrollLockWhitespacePlugin()],
   resolve: { alias: { "@": path.resolve(import.meta.dirname, "./src") } },
   server: { proxy: { "/api": "http://127.0.0.1:8766" } },
-  build: { outDir: "../workspace_bridge/static/dist", emptyOutDir: true },
+  build: { outDir: "../hashi/static/dist", emptyOutDir: true },
 });

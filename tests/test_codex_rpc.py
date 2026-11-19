@@ -7,12 +7,12 @@ import time
 
 import pytest
 
-from workspace_bridge.codex_rpc import CodexRpc, CodexRpcError
+from hashi.codex_rpc import CodexRpc, CodexRpcError
 
 
 def test_stderr_is_drained_bounded_and_native_errors_are_sanitized():
     child = r'''import json, sys
-sys.stderr.write("failed at /Users/private/project WB_RUNTIME_TOKEN=super-secret-token\n")
+sys.stderr.write("failed at /Users/private/project HASHI_RUNTIME_TOKEN=super-secret-token\n")
 sys.stderr.write("x" * 12000 + "\n")
 sys.stderr.write("-----BEGIN PRIVATE KEY-----\nprivate-material\n-----END PRIVATE KEY-----\n")
 sys.stderr.flush()
@@ -149,7 +149,7 @@ for raw in sys.stdin:
 def test_default_managed_command_enables_default_mode_request_user_input():
     import inspect
 
-    from workspace_bridge import codex_rpc as rpc_module
+    from hashi import codex_rpc as rpc_module
 
     managed = tuple(rpc_module.DEFAULT_CODEX_APP_SERVER_COMMAND)
     assert managed[:2] == ("codex", "app-server")
@@ -168,7 +168,7 @@ def test_default_managed_command_enables_default_mode_request_user_input():
 
 
 def test_custom_command_is_honored_verbatim_without_managed_flag(monkeypatch):
-    from workspace_bridge import codex_rpc as rpc_module
+    from hashi import codex_rpc as rpc_module
 
     child = r'''import json, sys
 for raw in sys.stdin:
@@ -201,8 +201,8 @@ for raw in sys.stdin:
 
 
 def test_version_probe_executable_extraction_with_managed_default_argv(monkeypatch):
-    from workspace_bridge import codex_host_adapter as adapter_module
-    from workspace_bridge import codex_rpc as rpc_module
+    from hashi import codex_host_adapter as adapter_module
+    from hashi import codex_rpc as rpc_module
 
     managed = tuple(rpc_module.DEFAULT_CODEX_APP_SERVER_COMMAND)
     # Descriptor probes `command[0]` only, so extra managed argv must not

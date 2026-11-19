@@ -1,6 +1,6 @@
 # Runtime protocol
 
-Workspace Bridge owns workspace authorization, handoffs, model policy, run
+Hashi owns workspace authorization, handoffs, model policy, run
 records, and audit. An authoritative Node owns the workspace filesystem/Git/
 handoff data plane and supervises its agent plugins. An agent plugin owns
 its native process or SDK, session files, model syntax, and security enforcement.
@@ -378,9 +378,9 @@ enforces = ["read_inside", "read_outside", "write_inside", "write_outside", "she
 features = ["steer", "queue"]
 ```
 
-Install a third-party manifest with `workspace-bridge node plugin add
+Install a third-party manifest with `hashi node plugin add
 <manifest.toml>`. The Node runs the command without a shell, in its own
-process group, with the Node's environment minus every `WB_*` variable.
+process group, with the Node's environment minus every `HASHI_*` variable.
 
 ## Conformance gate
 
@@ -390,8 +390,8 @@ or generic admin routes. Run the conformance kit on a plugin before adding
 it to a Node:
 
 ```sh
-workspace-bridge plugin test path/to/manifest.toml
-workspace-bridge plugin test path/to/manifest.toml --live
+hashi plugin test path/to/manifest.toml
+hashi plugin test path/to/manifest.toml --live
 ```
 
 The kit starts the plugin in a temporary folder of its own, never a real

@@ -15,15 +15,15 @@ import uvicorn
 from websockets.asyncio.client import connect
 
 from admin_helpers import admin_cookie
-from workspace_bridge import __version__, pairing
-from workspace_bridge.api import make_admin
-from workspace_bridge.cli import enable_local_node, initialize
-from workspace_bridge.node_cli import initialize_node, load_node_config
-from workspace_bridge.node_gateway import MAX_FRAME
-from workspace_bridge.node_link import pair, run_link
-from workspace_bridge.node_service import NodeService
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import Service
+from hashi import __version__, pairing
+from hashi.api import make_admin
+from hashi.cli import enable_local_node, initialize
+from hashi.node_cli import initialize_node, load_node_config
+from hashi.node_gateway import MAX_FRAME
+from hashi.node_link import pair, run_link
+from hashi.node_service import NodeService
+from hashi.security import BridgeError
+from hashi.service import Service
 
 
 def _free_port() -> int:
@@ -155,7 +155,7 @@ def test_bridge_restart_is_a_clean_disconnect_and_reconnect(paired, caplog):
     unhandled = []
     link.loop.call_soon_threadsafe(
         link.loop.set_exception_handler, lambda _loop, context: unhandled.append(context))
-    caplog.set_level(logging.INFO, logger="workspace_bridge.ops")
+    caplog.set_level(logging.INFO, logger="hashi.ops")
     paired["gateway"].stop()
     _wait(lambda: not service.node_gateway.connected(node_id))
     paired["gateway"] = _Gateway(service, paired["port"])
@@ -399,7 +399,7 @@ def test_doctor_reports_paired_nodes_from_recorded_state(paired):
 
 def test_paired_connection_states():
     from datetime import datetime, timedelta, timezone
-    from workspace_bridge.diagnostics import paired_connection_state
+    from hashi.diagnostics import paired_connection_state
     now = datetime(2026, 10, 25, 12, 0, tzinfo=timezone.utc)
     stamp = lambda seconds: (now - timedelta(seconds=seconds)).isoformat()
     assert paired_connection_state({}, now)[0] == "action_required"
@@ -410,7 +410,7 @@ def test_paired_connection_states():
 
 
 def test_node_records_its_link_status(paired):
-    from workspace_bridge.node_link import read_link_status
+    from hashi.node_link import read_link_status
     state = paired["node_state"]
     assert (state / "link-status.json").stat().st_mode & 0o777 == 0o600
     connected = read_link_status(state)
@@ -427,7 +427,7 @@ def test_node_records_its_link_status(paired):
 
 def test_link_status_staleness(tmp_path):
     from datetime import datetime, timedelta, timezone
-    from workspace_bridge.node_link import read_link_status, write_link_status
+    from hashi.node_link import read_link_status, write_link_status
     assert read_link_status(tmp_path)["status"] == "unknown"
     write_link_status(tmp_path, "connected", since="2026-10-25T00:00:00+00:00")
     assert read_link_status(tmp_path)["status"] == "connected"

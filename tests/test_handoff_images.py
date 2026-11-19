@@ -13,12 +13,12 @@ from PIL import Image, PngImagePlugin
 from pydantic import ValidationError
 import pytest
 
-from workspace_bridge import plan_files
-from workspace_bridge.api import DESTRUCTIVE_TOOLS, Handoff, TOOLS, make_mcp
-from workspace_bridge.media import (IMAGE_MIME_TYPES, MAX_IMAGE_BASE64_CHARS,
+from hashi import plan_files
+from hashi.api import DESTRUCTIVE_TOOLS, Handoff, TOOLS, make_mcp
+from hashi.media import (IMAGE_MIME_TYPES, MAX_IMAGE_BASE64_CHARS,
                                     MAX_IMAGE_REQUEST_BYTES, MAX_INPUT_BYTES)
 from mcp_helpers import argument_error, McpTransport, MODERN, PREFIX, VERSIONS
-from workspace_bridge.security import BridgeError, digest
+from hashi.security import BridgeError, digest
 
 
 def raster(fmt="PNG", *, size=(80, 60), noisy=False, **kwargs):
@@ -103,7 +103,7 @@ def test_upload_auth_fails_before_decoding(env, policy, monkeypatch):
         service.manage_workspace(env["id"], "disable")
     else:
         service.manage_bridge("rotate_token")
-    monkeypatch.setattr("workspace_bridge.media.read_image", lambda *a, **k: pytest.fail("denied upload decoded"))
+    monkeypatch.setattr("hashi.media.read_image", lambda *a, **k: pytest.fail("denied upload decoded"))
     with pytest.raises(BridgeError):
         upload(env)
     assert uploads(env) == []
@@ -228,7 +228,7 @@ def test_pixel_limit_and_decoder_timeout_store_nothing(env, monkeypatch):
         import subprocess
         raise subprocess.TimeoutExpired("fixed-image-decoder", 10)
 
-    monkeypatch.setattr("workspace_bridge.media.subprocess.run", timeout)
+    monkeypatch.setattr("hashi.media.subprocess.run", timeout)
     with pytest.raises(BridgeError) as exc:
         upload(env)
     assert exc.value.code == "image_timeout"

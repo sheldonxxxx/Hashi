@@ -13,9 +13,9 @@ parser.add_argument('--chromium', help='Optional browser executable path for the
 args = parser.parse_args()
 PROJECT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(PROJECT))
-from workspace_bridge.cli import initialize
-from workspace_bridge.service import Service
-from workspace_bridge import __version__
+from hashi.cli import initialize
+from hashi.service import Service
+from hashi import __version__
 if args.ui_components:
     from playwright.sync_api import sync_playwright
 
@@ -28,7 +28,7 @@ def port():
     with socket.socket() as s:
         s.bind(('127.0.0.1',0)); return s.getsockname()[1]
 
-with tempfile.TemporaryDirectory(prefix='workspace-bridge-v05-') as tmp:
+with tempfile.TemporaryDirectory(prefix='hashi-v05-') as tmp:
     tmp=pathlib.Path(tmp); parent=tmp/'projects';parent.mkdir()
     state=tmp/'private-state'; mp, ap=port(),port()
     cfg=initialize(state,[str(parent)],mp,ap)
@@ -46,7 +46,7 @@ with tempfile.TemporaryDirectory(prefix='workspace-bridge-v05-') as tmp:
     service.close()
     serverlog=tmp/'server.log'
     with serverlog.open('w') as output:
-        proc=subprocess.Popen([sys.executable,'-m','workspace_bridge.cli','--state',str(state),'serve'],cwd=PROJECT,stdout=output,stderr=output,env={**os.environ,'PYTHONPATH':str(PROJECT)})
+        proc=subprocess.Popen([sys.executable,'-m','hashi.cli','--state',str(state),'serve'],cwd=PROJECT,stdout=output,stderr=output,env={**os.environ,'PYTHONPATH':str(PROJECT)})
         try:
             client=httpx.Client(base_url=f'http://127.0.0.1:{mp}',trust_env=False,timeout=20)
             admin=httpx.Client(base_url=f'http://127.0.0.1:{ap}',trust_env=False,timeout=20)
@@ -67,7 +67,7 @@ with tempfile.TemporaryDirectory(prefix='workspace-bridge-v05-') as tmp:
                 r=raw(name,args);assert r.status_code==200,r.text
                 res=r.json()['result'];assert not res['isError'],res
                 return json.loads(res['content'][0]['text'])
-            smoke=subprocess.run([sys.executable,'scripts/smoke_mcp.py','--url',f'http://127.0.0.1:{mp}/mcp'],cwd=PROJECT,env={**os.environ,'WORKSPACE_BRIDGE_TOKEN':token},text=True,capture_output=True,timeout=30)
+            smoke=subprocess.run([sys.executable,'scripts/smoke_mcp.py','--url',f'http://127.0.0.1:{mp}/mcp'],cwd=PROJECT,env={**os.environ,'HASHI_TOKEN':token},text=True,capture_output=True,timeout=30)
             assert smoke.returncode==0,smoke.stdout+smoke.stderr
             logs.extend(smoke.stdout.strip().splitlines());print(smoke.stdout,flush=True)
             assert call('list_workspaces')['total']==2
@@ -95,7 +95,7 @@ with tempfile.TemporaryDirectory(prefix='workspace-bridge-v05-') as tmp:
                 assert hashlib.sha256(data).hexdigest() == meta['preview_sha256']
             images = subprocess.run([sys.executable, 'scripts/check_image_mcp.py',
                 '--url', f'http://127.0.0.1:{mp}/mcp', '--workspace-id', ids['Alpha'], '--path', 'probe.png'],
-                cwd=PROJECT, env={**os.environ, 'WORKSPACE_BRIDGE_TOKEN': token}, text=True,
+                cwd=PROJECT, env={**os.environ, 'HASHI_TOKEN': token}, text=True,
                 capture_output=True, timeout=40)
             assert images.returncode == 0, images.stdout + images.stderr
             logs.extend(images.stdout.strip().splitlines()); print(images.stdout, flush=True)
@@ -272,4 +272,4 @@ with tempfile.TemporaryDirectory(prefix='workspace-bridge-v05-') as tmp:
             except subprocess.TimeoutExpired:proc.kill();proc.wait()
             if proc.returncode not in [0,-15]: print(serverlog.read_text())
             client.close();admin.close()
-PROJECT.joinpath('SMOKE_RESULTS.txt').write_text(f'Workspace Bridge {__version__} — Linux local validation\nSynthetic projects only; no real OpenAI tunnel or Pi agent execution.\n\n'+'\n'.join(logs)+'\n')
+PROJECT.joinpath('SMOKE_RESULTS.txt').write_text(f'Hashi {__version__} — Linux local validation\nSynthetic projects only; no real OpenAI tunnel or Pi agent execution.\n\n'+'\n'.join(logs)+'\n')

@@ -6,7 +6,7 @@ import json
 import socket
 
 import pytest
-from workspace_bridge.webhook_transport import (
+from hashi.webhook_transport import (
     CallbackError, CallbackResponse, WebhookTransport, callback_url, public_addresses, signed_headers, signing_key,
 )
 from event_fakes import TEST_SECRET, TEST_URL
@@ -85,8 +85,8 @@ def test_post_pins_ip_preserves_tls_name_and_never_follows_redirect(monkeypatch)
         def close(self): pass
     monkeypatch.setattr(socket, 'getaddrinfo', dns)
     monkeypatch.setattr(socket, 'socket', lambda *a: Sock())
-    monkeypatch.setattr('workspace_bridge.webhook_transport.ssl.create_default_context', lambda: Context())
-    monkeypatch.setattr('workspace_bridge.webhook_transport.http.client.HTTPSConnection', Connection)
+    monkeypatch.setattr('hashi.webhook_transport.ssl.create_default_context', lambda: Context())
+    monkeypatch.setattr('hashi.webhook_transport.http.client.HTTPSConnection', Connection)
     transport = WebhookTransport()
     assert transport.post(TEST_URL, b'{}', {}).status == 302
     assert calls['dns'] == [('receiver.example', 443)]

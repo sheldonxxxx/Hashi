@@ -6,8 +6,8 @@ node_modules/
 *.egg-info/
 build/
 dist/
-!workspace_bridge/static/dist/
-!workspace_bridge/static/dist/**
+!hashi/static/dist/
+!hashi/static/dist/**
 .env*
 *.sqlite3*
 admin-token

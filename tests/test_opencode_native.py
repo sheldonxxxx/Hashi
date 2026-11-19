@@ -7,11 +7,11 @@ import threading
 import time
 
 import pytest
-from workspace_bridge import security_profiles as sp
-from workspace_bridge.opencode_host_adapter import OpenCodeHostAdapter
+from hashi import security_profiles as sp
+from hashi.opencode_host_adapter import OpenCodeHostAdapter
 
-BINARY = os.environ.get('WB_OPENCODE_TEST_BINARY')
-pytestmark = pytest.mark.skipif(not BINARY, reason='WB_OPENCODE_TEST_BINARY is required for installed v2 acceptance')
+BINARY = os.environ.get('HASHI_OPENCODE_TEST_BINARY')
+pytestmark = pytest.mark.skipif(not BINARY, reason='HASHI_OPENCODE_TEST_BINARY is required for installed v2 acceptance')
 
 
 @pytest.mark.parametrize('mode', ['text', 'image', 'images4', 'deny', 'ask', 'queue', 'grep'])

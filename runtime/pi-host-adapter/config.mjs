@@ -18,7 +18,7 @@ export const PI_VERSION_TIMEOUT_MS = 10000;
 
 export function defaultAgentDir(homeDir) {
   const home = homeDir || os.homedir();
-  return path.join(home, ".pi", "workspace-bridge");
+  return path.join(home, ".pi", "hashi");
 }
 
 // Expand a leading ~, $HOME or ${HOME} using the explicit home directory.
@@ -55,7 +55,7 @@ export function resolveAgentDir(raw, homeDir) {
 // realpath, the remaining suffix is reconstructed, and canonical paths are
 // compared. The home/normal-tree side is canonicalized the same way, so
 // symlinked ancestors or aliases resolving into the normal tree are rejected
-// while valid dirs elsewhere (including ~/.pi/workspace-bridge) stay allowed.
+// while valid dirs elsewhere (including ~/.pi/hashi) stay allowed.
 function canonicalizeCandidate(absolute) {
   const normalized = path.normalize(absolute);
   const existing = [normalized];
@@ -104,19 +104,19 @@ export function parseLogLevel(raw) {
   if (!ALLOWED_LOG_LEVELS.includes(text)) {
     // Never echo the raw value in the error message.
     throw new Error(
-      `WB_LOG_LEVEL must be one of ${ALLOWED_LOG_LEVELS.join(", ")} (default ${DEFAULT_LOG_LEVEL})`,
+      `HASHI_LOG_LEVEL must be one of ${ALLOWED_LOG_LEVELS.join(", ")} (default ${DEFAULT_LOG_LEVEL})`,
     );
   }
   return text;
 }
 
 export function loadConfig(env = process.env, homeDir = os.homedir()) {
-  const logRaw = env ? env.WB_LOG_LEVEL : undefined;
+  const logRaw = env ? env.HASHI_LOG_LEVEL : undefined;
   const logLevel = logRaw === undefined || logRaw === null
     || (typeof logRaw === "string" && !logRaw.trim())
     ? DEFAULT_LOG_LEVEL : parseLogLevel(logRaw);
-  const binary = String(env.WB_PI_BINARY || DEFAULT_PI_BINARY).trim() || DEFAULT_PI_BINARY;
-  const projectsDir = String(env.WB_PI_PROJECTS_DIR || env.WB_PROJECTS_DIR || "").trim();
+  const binary = String(env.HASHI_PI_BINARY || DEFAULT_PI_BINARY).trim() || DEFAULT_PI_BINARY;
+  const projectsDir = String(env.HASHI_PI_PROJECTS_DIR || env.HASHI_PROJECTS_DIR || "").trim();
   const agentDirRaw = String(env.PI_CODING_AGENT_DIR || "").trim();
   return {
     adapterVersion: ADAPTER_VERSION,

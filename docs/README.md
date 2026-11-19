@@ -17,7 +17,7 @@ authority; prose never overrides them.
 ## Agents asked to install or configure
 
 - [Agent setup](AGENT_SETUP.md) — deterministic runbook an AI/coding agent
-  follows to prepare Workspace Bridge for a user. Starts with host discovery,
+  follows to prepare Hashi for a user. Starts with host discovery,
   uses only supported commands, keeps secrets out of chat, separates
   agent-runnable commands from required user/manual UI actions, and states
   exact stop/ask points with checkpoints and rollback rules.

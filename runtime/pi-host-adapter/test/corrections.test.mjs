@@ -44,12 +44,12 @@ function makeAdapter(projects, transport) {
 
 // ------------------------------------------------------- 4. opaque marker
 test("opaque marker grammar accepts only prefix + bare toolCallId", () => {
-  assert.equal(parseOpaqueMarker("WB_PERMISSION_V1:call-1"), "call-1");
-  assert.equal(parseOpaqueMarker("WB_PERMISSION_V1:550e8400-e29b-41d4-a716-446655440000"),
+  assert.equal(parseOpaqueMarker("HASHI_PERMISSION_V1:call-1"), "call-1");
+  assert.equal(parseOpaqueMarker("HASHI_PERMISSION_V1:550e8400-e29b-41d4-a716-446655440000"),
     "550e8400-e29b-41d4-a716-446655440000");
-  for (const bad of ["", "Pick one:", "WB_PERMISSION_V1:", "WB_PERMISSION_V1:call-1 edit notes.txt",
-      "WB_PERMISSION_V1:call-1 ", "WB_PERMISSION_V1: call-1", "WB_PERMISSION_V1:call 1",
-      "WB_PERMISSION_V1:" + "x".repeat(201), "wb_permission_v1:call-1", "WB_PERMISSION_V2:call-1"]) {
+  for (const bad of ["", "Pick one:", "HASHI_PERMISSION_V1:", "HASHI_PERMISSION_V1:call-1 edit notes.txt",
+      "HASHI_PERMISSION_V1:call-1 ", "HASHI_PERMISSION_V1: call-1", "HASHI_PERMISSION_V1:call 1",
+      "HASHI_PERMISSION_V1:" + "x".repeat(201), "hashi_permission_v1:call-1", "HASHI_PERMISSION_V2:call-1"]) {
     assert.equal(parseOpaqueMarker(bad), "", bad.slice(0, 40));
   }
 });
@@ -68,12 +68,12 @@ test("suffixed or malformed marker titles fail closed without pending", async ()
     args: { path: "notes.txt" } });
   await new Promise((resolve) => setImmediate(resolve));
   // Old suffixed shape is rejected: resolves undefined, never pending.
-  const old = await ui.select("WB_PERMISSION_V1:call-1 edit notes.txt",
+  const old = await ui.select("HASHI_PERMISSION_V1:call-1 edit notes.txt",
     [OPTION_ONCE, OPTION_ALWAYS, OPTION_REJECT]);
   assert.equal(old, undefined);
   assert.deepEqual(await adapter.listPermissions(projects.app, session.id), []);
   // Empty id is rejected the same way.
-  const empty = await ui.select("WB_PERMISSION_V1:",
+  const empty = await ui.select("HASHI_PERMISSION_V1:",
     [OPTION_ONCE, OPTION_ALWAYS, OPTION_REJECT]);
   assert.equal(empty, undefined);
   assert.deepEqual(await adapter.listPermissions(projects.app, session.id), []);
@@ -181,7 +181,7 @@ test("malformed selects never suspend and leave the session usable", async () =>
   await new Promise((resolve) => setImmediate(resolve));
   // A malformed trusted-shaped ask resolves undefined immediately: no
   // untracked suspension, no session death.
-  const malformed = await ui.select("WB_PERMISSION_V1:call-1 edit notes.txt",
+  const malformed = await ui.select("HASHI_PERMISSION_V1:call-1 edit notes.txt",
     [OPTION_ONCE, OPTION_ALWAYS, OPTION_REJECT]);
   assert.equal(malformed, undefined);
   assert.deepEqual(await adapter.listPermissions(projects.app, session.id), []);

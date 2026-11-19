@@ -8,8 +8,8 @@ from pathlib import Path
 TESTS = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(TESTS.parent), str(TESTS)]
 
-from workspace_bridge.codex_host_adapter import CodexHostAdapter  # noqa: E402
-from workspace_bridge.plugin_host import PluginServer  # noqa: E402
+from hashi.codex_host_adapter import CodexHostAdapter  # noqa: E402
+from hashi.plugin_host import PluginServer  # noqa: E402
 from test_codex_host_adapter import FakeCodexRpc  # noqa: E402
 
 if __name__ == "__main__":

@@ -1211,9 +1211,9 @@ test("Codex security dialog says which profile keys the agent cannot enforce", a
     hasText: "Local Codex · Codex",
   });
   await codexTarget.getByRole("button", { name: "Change security" }).click();
-  await page.getByText("Use a Workspace Bridge profile").click();
+  await page.getByText("Use a Hashi profile").click();
   const profiles = page.getByRole("group", {
-    name: "Workspace Bridge profiles",
+    name: "Hashi profiles",
   });
   await expect(
     profiles.getByRole("button", { name: /reviewed/ }),
@@ -1239,7 +1239,7 @@ test("Codex security dialog lets a route follow the agent's own security", async
   await expect(
     page.getByRole("radio", { name: /Use the agent's own security/ }),
   ).toBeChecked();
-  await page.getByText("Use a Workspace Bridge profile").click();
+  await page.getByText("Use a Hashi profile").click();
   await page.getByRole("button", { name: /read-only/ }).click();
   await page.getByRole("button", { name: "Save security source" }).click();
   expect(
@@ -1922,9 +1922,9 @@ test("each page sets its own tab title", async ({ page }) => {
   await mockApi(page);
   await page.goto("./");
   await navigate(page, "Audit");
-  await expect(page).toHaveTitle("Audit · Workspace Bridge");
+  await expect(page).toHaveTitle("Audit · Hashi");
   await navigate(page, "Runs");
-  await expect(page).toHaveTitle("Runs · Workspace Bridge");
+  await expect(page).toHaveTitle("Runs · Hashi");
 });
 
 test("the command palette pairs a Node and adds an adapter", async ({

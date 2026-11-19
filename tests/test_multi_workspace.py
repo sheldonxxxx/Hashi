@@ -7,9 +7,9 @@ import httpx
 import pytest
 
 from mcp_helpers import argument_error, McpTransport
-from workspace_bridge.api import make_admin, make_mcp, TOOLS, Handoff
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import Service
+from hashi.api import make_admin, make_mcp, TOOLS, Handoff
+from hashi.security import BridgeError
+from hashi.service import Service
 
 
 def add(env, name="Beta", enabled=True):

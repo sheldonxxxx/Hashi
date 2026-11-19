@@ -8,8 +8,8 @@ OpenAI APIs, upload anything, or change the MCP endpoint or Tunnel.
 
 The repository owns the reusable presentation template at
 [`packaging/chatgpt/plugin.json`](../packaging/chatgpt/plugin.json).
-Workspace Bridge's canonical skill is
-[`workspace_bridge/skills/project-lead/SKILL.md`](../workspace_bridge/skills/project-lead/SKILL.md).
+Hashi's canonical skill is
+[`hashi/skills/project-lead/SKILL.md`](../hashi/skills/project-lead/SKILL.md).
 The package contains a snapshot of that file. Editing its source does not
 update an installed plugin; build and upload a new version after its bytes
 change. Skills describe repeatable workflows around live MCP tools.
@@ -17,7 +17,7 @@ See OpenAI's [Build skills](https://developers.openai.com/plugins/build/skills).
 
 ## Register the app and establish the package identity
 
-1. Register/connect the MCP app first. For Workspace Bridge, follow
+1. Register/connect the MCP app first. For Hashi, follow
    [Setup](SETUP.md) to use the existing Secure MCP Tunnel. Keep credentials in
    the local connection configuration.
 2. In ChatGPT developer mode, open the registered connection's page and copy
@@ -40,7 +40,7 @@ during bootstrap: inspect only its root `plugin.json`, or its legacy
 No ZIP migration/import helper is required, and routine builds never read an
 export or ChatGPT/Codex cache. Do not derive a generated package name from an
 app ID. For a deliberately new plugin, choose its package name explicitly and
-bootstrap an explicit starting version with `WB_SKILL_PLUGIN_ALREADY_PACKAGED=false`
+bootstrap an explicit starting version with `HASHI_SKILL_PLUGIN_ALREADY_PACKAGED=false`
 or `--no-skill-already-packaged`;
 the first build adds the skill and advances the package version once.
 
@@ -51,8 +51,8 @@ existing environment. PyYAML is part of the repository's test extra; see
 [Contributing](../CONTRIBUTING.md#setup). `--no-sync` prevents these commands
 from installing dependencies implicitly.
 
-For an existing Workspace Bridge plugin that already embeds the exact current
-project-lead skill, set **`WB_SKILL_PLUGIN_ALREADY_PACKAGED=true`** (or use
+For an existing Hashi plugin that already embeds the exact current
+project-lead skill, set **`HASHI_SKILL_PLUGIN_ALREADY_PACKAGED=true`** (or use
 `--skill-already-packaged`) at bootstrap. This includes
 a working skill-enabled package you have already uploaded: its next unchanged
 build should immediately no-op. Verify that the installed release contains the
@@ -90,16 +90,16 @@ digest; the first normal build then adds the skill with one patch bump. Neither
 mode is inferred from the live plugin. The positive and negative CLI flags are
 accepted only with `--init`.
 
-The default alias is the template's `name` (`workspace-bridge`); it is independent
+The default alias is the template's `name` (`hashi`); it is independent
 of the actual package name and app ID. Choose another alias with `--app-alias`
 at initialization if your skill needs one. Alias validation remains a separate,
 conservative lowercase rule; specify an alias if your template's name does not
 fit it.
 
-State defaults to `$XDG_STATE_HOME/workspace-bridge/skill-plugins` when that
+State defaults to `$XDG_STATE_HOME/hashi/skill-plugins` when that
 absolute environment path is set. Otherwise it uses
-`~/Library/Application Support/workspace-bridge/skill-plugins` on macOS or
-`~/.local/state/workspace-bridge/skill-plugins` on Linux. `--state /path/to/private-state`
+`~/Library/Application Support/hashi/skill-plugins` on macOS or
+`~/.local/state/hashi/skill-plugins` on Linux. `--state /path/to/private-state`
 selects an explicit directory; pass the same directory on every command.
 Each app's JSON filename is the SHA-256 of its normalized ID. Files and emitted
 ZIPs are created with owner-only permissions. Initialization refuses to replace
@@ -131,15 +131,15 @@ An explicit `--no-skill-already-packaged` overrides an inherited true value.
 
 | Env-file / process-environment key | CLI override | Used for |
 | --- | --- | --- |
-| `WB_SKILL_PLUGIN_APP_ID` | `--app-id` | Both actions; required after resolution |
-| `WB_SKILL_PLUGIN_PACKAGE_NAME` | `--package-name` | Bootstrap only |
-| `WB_SKILL_PLUGIN_PACKAGE_VERSION` | `--package-version` | Bootstrap only |
-| `WB_SKILL_PLUGIN_ALREADY_PACKAGED` | `--skill-already-packaged` / `--no-skill-already-packaged` | Bootstrap only; defaults to false |
-| `WB_SKILL_PLUGIN_STATE` | `--state` | Both actions |
-| `WB_SKILL_PLUGIN_APP_ALIAS` | `--app-alias` | Bootstrap only |
-| `WB_SKILL_PLUGIN_TEMPLATE` | `--template` | Bootstrap only |
-| `WB_SKILL_PLUGIN_SKILL` | `--skill` | Remember source at bootstrap; override saved source for a build |
-| `WB_SKILL_PLUGIN_OUTPUT` | `--output` | Normal builds; file setting is ignored during bootstrap |
+| `HASHI_SKILL_PLUGIN_APP_ID` | `--app-id` | Both actions; required after resolution |
+| `HASHI_SKILL_PLUGIN_PACKAGE_NAME` | `--package-name` | Bootstrap only |
+| `HASHI_SKILL_PLUGIN_PACKAGE_VERSION` | `--package-version` | Bootstrap only |
+| `HASHI_SKILL_PLUGIN_ALREADY_PACKAGED` | `--skill-already-packaged` / `--no-skill-already-packaged` | Bootstrap only; defaults to false |
+| `HASHI_SKILL_PLUGIN_STATE` | `--state` | Both actions |
+| `HASHI_SKILL_PLUGIN_APP_ALIAS` | `--app-alias` | Bootstrap only |
+| `HASHI_SKILL_PLUGIN_TEMPLATE` | `--template` | Bootstrap only |
+| `HASHI_SKILL_PLUGIN_SKILL` | `--skill` | Remember source at bootstrap; override saved source for a build |
+| `HASHI_SKILL_PLUGIN_OUTPUT` | `--output` | Normal builds; file setting is ignored during bootstrap |
 
 Bootstrap settings can remain in the file during normal builds. Those builds
 use the saved package identity/version and presentation; they do not
@@ -159,7 +159,7 @@ literals. Booleans accept true/false, 1/0, yes/no, and on/off, case-insensitivel
 Backslashes remain literal; no escape decoding, shell execution, dollar-variable
 expansion, or command substitution occurs. Dollar signs and backticks in file
 values, unbalanced quotes, malformed assignments, duplicate supported keys,
-invalid booleans, NULs, and unknown `WB_SKILL_PLUGIN_*` keys fail without echoing
+invalid booleans, NULs, and unknown `HASHI_SKILL_PLUGIN_*` keys fail without echoing
 raw values. Other valid non-prefixed keys are ignored. Configuration syntax
 must remain valid even for settings overridden by a higher-priority source.
 
@@ -172,7 +172,7 @@ configuration.
 
 ## Build and upload changes
 
-After bootstrap, normal Workspace Bridge builds need no repeated arguments:
+After bootstrap, normal Hashi builds need no repeated arguments:
 
 ```sh
 uv run --no-sync python scripts/build_skill_plugin.py
@@ -184,7 +184,7 @@ normalized by removing `plugin_`. The generated binding is:
 ```json
 {
   "apps": {
-    "workspace-bridge": {"id": "asdk_app_example123"}
+    "hashi": {"id": "asdk_app_example123"}
   }
 }
 ```
@@ -291,14 +291,14 @@ false. If the existing release contains these exact bytes, set true instead;
 the next normal build will no-op.
 
 ```dotenv
-WB_SKILL_PLUGIN_APP_ID=plugin_asdk_app_example456
-WB_SKILL_PLUGIN_PACKAGE_NAME=my-existing-support-plugin
-WB_SKILL_PLUGIN_PACKAGE_VERSION=1.5.0
-WB_SKILL_PLUGIN_ALREADY_PACKAGED=false
-WB_SKILL_PLUGIN_STATE=/path/to/private-support-state
-WB_SKILL_PLUGIN_APP_ALIAS=support
-WB_SKILL_PLUGIN_TEMPLATE=/path/to/support-plugin.json
-WB_SKILL_PLUGIN_SKILL=/path/to/support-review/SKILL.md
+HASHI_SKILL_PLUGIN_APP_ID=plugin_asdk_app_example456
+HASHI_SKILL_PLUGIN_PACKAGE_NAME=my-existing-support-plugin
+HASHI_SKILL_PLUGIN_PACKAGE_VERSION=1.5.0
+HASHI_SKILL_PLUGIN_ALREADY_PACKAGED=false
+HASHI_SKILL_PLUGIN_STATE=/path/to/private-support-state
+HASHI_SKILL_PLUGIN_APP_ALIAS=support
+HASHI_SKILL_PLUGIN_TEMPLATE=/path/to/support-plugin.json
+HASHI_SKILL_PLUGIN_SKILL=/path/to/support-review/SKILL.md
 ```
 
 ```sh

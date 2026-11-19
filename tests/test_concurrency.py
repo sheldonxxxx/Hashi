@@ -7,7 +7,7 @@ import pytest
 
 from test_multi_workspace import add
 from test_run_coordinator import ADAPTER_ID, modern_env, _finish_test_run  # noqa: F401
-from workspace_bridge.keyed_locks import KeyedLocks, LockOrderError
+from hashi.keyed_locks import KeyedLocks, LockOrderError
 
 
 def test_keyed_locks_are_reentrant_and_dropped_when_unused():

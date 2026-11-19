@@ -10,9 +10,9 @@ import httpx
 import pytest
 
 from admin_helpers import admin_cookie
-from workspace_bridge import api as api_module
-from workspace_bridge.api import AdminSessionStore, make_admin
-from workspace_bridge.manager_events import RunEventHub
+from hashi import api as api_module
+from hashi.api import AdminSessionStore, make_admin
+from hashi.manager_events import RunEventHub
 from test_run_coordinator import ADAPTER_ID, modern_env
 
 

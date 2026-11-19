@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 
 from conftest import create_test_adapter
-from workspace_bridge import security_profiles as sp
-from workspace_bridge.profile_registry import adapter_security
-from workspace_bridge.security import BridgeError
+from hashi import security_profiles as sp
+from hashi.profile_registry import adapter_security
+from hashi.security import BridgeError
 
 VECTORS = json.loads((Path(__file__).parent / "fixtures" / "profile_vectors.json").read_text())
 

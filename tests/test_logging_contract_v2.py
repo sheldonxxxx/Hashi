@@ -9,9 +9,9 @@ from __future__ import annotations
 import json
 import logging
 
-from workspace_bridge import oplog
+from hashi import oplog
 
-OPS_LOGGER = logging.getLogger("workspace_bridge.ops")
+OPS_LOGGER = logging.getLogger("hashi.ops")
 
 
 class Capture(logging.Handler):
@@ -68,7 +68,7 @@ def test_boundary_reject_event_is_allowlisted_and_bounded():
 
 
 def test_request_error_event_carries_sanitized_code_only():
-    from workspace_bridge.security import BridgeError
+    from hashi.security import BridgeError
     exc = BridgeError("upstream exploded with sk-secret /tmp/x", "upstream_broken")
     handler, previous = _capture()
     try:

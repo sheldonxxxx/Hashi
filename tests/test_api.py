@@ -4,7 +4,7 @@ import time
 import httpx
 import pytest
 from mcp_helpers import argument_error, McpTransport
-from workspace_bridge.api import make_admin, make_mcp, TOOLS, AdminSessionStore
+from hashi.api import make_admin, make_mcp, TOOLS, AdminSessionStore
 
 @pytest.fixture
 def mcp(env):
@@ -294,7 +294,7 @@ async def test_admin_bearer_is_rejected(env):
 
 
 async def test_admin_session_bounded_count(env):
-    from workspace_bridge.api import AdminSessionStore
+    from hashi.api import AdminSessionStore
     store = AdminSessionStore()
     for i in range(store.MAX_SESSIONS + 10):
         store.create()
@@ -330,7 +330,7 @@ async def test_admin_node_reads_run_off_the_event_loop(env, mcp, payload, monkey
     assert all(thread is not loop_thread for thread in seen.values())
 
 async def test_handoff_manager_and_mcp_edit_delete(env, mcp, payload):
-    from workspace_bridge.api import Handoff
+    from hashi.api import Handoff
     job = env['service'].call(env['id'], env['token'], 'save_handoff', Handoff.model_validate(payload).model_dump())
     app = make_admin(env['service'])
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://127.0.0.1:8766', headers={'Cookie': admin_cookie(app)}) as client:

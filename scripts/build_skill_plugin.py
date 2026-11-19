@@ -24,10 +24,10 @@ import tempfile
 from zipfile import BadZipFile, ZIP_STORED, ZipFile, ZipInfo
 
 REPO = Path(__file__).resolve().parents[1]
-DEFAULT_SKILL = REPO / "workspace_bridge/skills/project-lead/SKILL.md"
+DEFAULT_SKILL = REPO / "hashi/skills/project-lead/SKILL.md"
 DEFAULT_TEMPLATE = REPO / "packaging/chatgpt/plugin.json"
 DEFAULT_ENV_FILE = REPO / ".env.skill-plugin"
-ENV_PREFIX = "WB_SKILL_PLUGIN_"
+ENV_PREFIX = "HASHI_SKILL_PLUGIN_"
 ENV_OPTIONS = {
     "app_id": ENV_PREFIX + "APP_ID",
     "package_name": ENV_PREFIX + "PACKAGE_NAME",
@@ -61,7 +61,7 @@ def _parse_boolean(value: str) -> bool:
         return True
     if normalized in ("false", "0", "no", "off"):
         return False
-    raise PackagingError("WB_SKILL_PLUGIN_ALREADY_PACKAGED must be true/false, 1/0, yes/no, or on/off")
+    raise PackagingError("HASHI_SKILL_PLUGIN_ALREADY_PACKAGED must be true/false, 1/0, yes/no, or on/off")
 
 
 def _env_literal(raw: str, line_number: int) -> str:
@@ -106,7 +106,7 @@ def read_env_file(path: Path, *, required: bool = False) -> dict:
         if not separator or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key):
             raise PackagingError(f"env file line {number}: expected KEY=VALUE")
         if key.startswith(ENV_PREFIX) and key not in supported:
-            raise PackagingError(f"env file line {number}: unknown WB_SKILL_PLUGIN_ configuration key")
+            raise PackagingError(f"env file line {number}: unknown HASHI_SKILL_PLUGIN_ configuration key")
         value = _env_literal(raw, number)
         if key not in supported:
             continue
@@ -130,7 +130,7 @@ def resolve_configuration(args: argparse.Namespace) -> argparse.Namespace:
     file_values = read_env_file(selected, required=args.env_file is not None)
     process_keys = {key for key in os.environ if key.startswith(ENV_PREFIX)}
     if process_keys - set(ENV_OPTIONS.values()):
-        raise PackagingError("unknown WB_SKILL_PLUGIN_ configuration key in process environment")
+        raise PackagingError("unknown HASHI_SKILL_PLUGIN_ configuration key in process environment")
     process_values = {}
     for option, key in ENV_OPTIONS.items():
         if key not in process_keys:
@@ -285,7 +285,7 @@ def default_state_dir() -> Path:
         base = Path.home() / "Library/Application Support"
     else:
         base = Path.home() / ".local/state"
-    return base / "workspace-bridge/skill-plugins"
+    return base / "hashi/skill-plugins"
 
 
 def state_path(directory: Path, app_id: str) -> Path:
@@ -483,7 +483,7 @@ def build(app_id: str, directory: Path, *, skill_path: Path | None = None,
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--env-file", type=Path, help="Alternate config file; default: repository .env.skill-plugin if present; never Docker .env")
-    parser.add_argument("--app-id", help="Registered technical ID; may come from WB_SKILL_PLUGIN_APP_ID")
+    parser.add_argument("--app-id", help="Registered technical ID; may come from HASHI_SKILL_PLUGIN_APP_ID")
     parser.add_argument("--state", type=Path, help="Private state directory; default: platform/XDG user-local state")
     parser.add_argument("--init", action="store_true", help="Bootstrap exact existing package identity/version once; emits no ZIP")
     parser.add_argument("--skill-already-packaged", action=argparse.BooleanOptionalAction, default=None,
@@ -503,9 +503,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         args = resolve_configuration(args)
         if not args.app_id:
-            raise PackagingError("app ID is required; use --app-id or WB_SKILL_PLUGIN_APP_ID")
+            raise PackagingError("app ID is required; use --app-id or HASHI_SKILL_PLUGIN_APP_ID")
         if args.init and (not args.package_name or not args.package_version):
-            raise PackagingError("--init requires package name/version via CLI or WB_SKILL_PLUGIN_PACKAGE_NAME/PACKAGE_VERSION")
+            raise PackagingError("--init requires package name/version via CLI or HASHI_SKILL_PLUGIN_PACKAGE_NAME/PACKAGE_VERSION")
         directory = args.state if args.state is not None else default_state_dir()
         if args.init:
             initialize(args.app_id, directory, args.package_name, args.package_version,

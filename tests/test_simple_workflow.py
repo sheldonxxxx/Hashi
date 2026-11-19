@@ -8,10 +8,10 @@ import httpx
 import pytest
 
 from mcp_helpers import McpTransport
-from workspace_bridge.api import Handoff, INSTRUCTIONS, TOOLS, make_admin, make_mcp
-from workspace_bridge.embedded_skill import read_project_lead_skill
-from workspace_bridge.security import BridgeError, HANDOFF, SafeRoot, digest
-from workspace_bridge.service import Service
+from hashi.api import Handoff, INSTRUCTIONS, TOOLS, make_admin, make_mcp
+from hashi.embedded_skill import read_project_lead_skill
+from hashi.security import BridgeError, HANDOFF, SafeRoot, digest
+from hashi.service import Service
 
 RETIRED = ('review_changes', 'read_change', 'record_audit')
 EXPECTED = {'list_workspaces', 'workspace_info',

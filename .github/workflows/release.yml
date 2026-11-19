@@ -61,9 +61,9 @@ jobs:
           # Pi package version must match tag.
           PI_VERSION="$(node -p 'require("./runtime/pi-host-adapter/package.json").version')"
           test "$PI_VERSION" = "$VERSION" || { echo "pi $PI_VERSION != tag $VERSION" >&2; exit 1; }
-          # workspace-bridge product version must match tag.
-          WB_VERSION="$(uv run python -c 'from workspace_bridge import __version__; print(__version__)')"
-          test "$WB_VERSION" = "$VERSION" || { echo "product $WB_VERSION != tag $VERSION" >&2; exit 1; }
+          # hashi product version must match tag.
+          HASHI_VERSION="$(uv run python -c 'from hashi import __version__; print(__version__)')"
+          test "$HASHI_VERSION" = "$VERSION" || { echo "product $HASHI_VERSION != tag $VERSION" >&2; exit 1; }
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
   quality:
@@ -131,7 +131,7 @@ jobs:
           set -euo pipefail
           npm --prefix web ci
           npm --prefix web run build
-          git diff --exit-code -- workspace_bridge/static/dist
+          git diff --exit-code -- hashi/static/dist
       - name: Build the wheel once
         run: |
           set -euo pipefail
@@ -151,13 +151,13 @@ jobs:
               eps = [n for n in names if n.endswith("entry_points.txt")]
               assert len(eps) == 1, names
               text = z.read(eps[0]).decode()
-          assert "workspace-bridge = workspace_bridge.cli:main" in text, text
-          assert "workspace-bridge-node = workspace_bridge.node_cli:main" in text, text
+          assert "hashi = hashi.cli:main" in text, text
+          assert "hashi-node = hashi.node_cli:main" in text, text
           assert "-adapter = " not in text, text
           for plugin in ("claude", "codex", "opencode", "pi"):
-              assert f"workspace_bridge/plugins/{plugin}.toml" in names, names
-          assert "workspace_bridge/opencode_permission_plugin/index.mjs" in names
-          assert "workspace_bridge/opencode_permission_plugin/package.json" in names
+              assert f"hashi/plugins/{plugin}.toml" in names, names
+          assert "hashi/opencode_permission_plugin/index.mjs" in names
+          assert "hashi/opencode_permission_plugin/package.json" in names
           print("wheel console_scripts ok")
           PY
       - name: Smoke exact staged wheel in a clean environment
@@ -166,12 +166,12 @@ jobs:
           VENV="$RUNNER_TEMP/bridge-wheel-smoke"
           uv venv "$VENV"
           uv pip install --python "$VENV/bin/python" dist/pypi/*.whl
-          test "$("$VENV/bin/workspace-bridge" --version)" = "${RELEASE_TAG#v}"
-          "$VENV/bin/workspace-bridge" node --help
-          "$VENV/bin/workspace-bridge-node" --help
-          "$VENV/bin/workspace-bridge-node" plugin --help
-          "$VENV/bin/python" -c 'from workspace_bridge.plugin_protocol import builtin_manifests; assert set(builtin_manifests()) == {"claude", "codex", "opencode", "pi"}'
-          "$VENV/bin/python" -c 'import workspace_bridge.plugin_host, workspace_bridge.opencode_host_adapter; from importlib.resources import files; assert files("workspace_bridge").joinpath("opencode_permission_plugin/index.mjs").is_file()'
+          test "$("$VENV/bin/hashi" --version)" = "${RELEASE_TAG#v}"
+          "$VENV/bin/hashi" node --help
+          "$VENV/bin/hashi-node" --help
+          "$VENV/bin/hashi-node" plugin --help
+          "$VENV/bin/python" -c 'from hashi.plugin_protocol import builtin_manifests; assert set(builtin_manifests()) == {"claude", "codex", "opencode", "pi"}'
+          "$VENV/bin/python" -c 'import hashi.plugin_host, hashi.opencode_host_adapter; from importlib.resources import files; assert files("hashi").joinpath("opencode_permission_plugin/index.mjs").is_file()'
       - name: Upload prepared PyPI dist
         uses: actions/upload-artifact@v7
         with:
@@ -273,9 +273,9 @@ jobs:
           VERSION="${TAG#v}"
           rm -rf dist/release-assets
           mkdir -p dist/release-assets
-          cp "dist/pypi/workspace_bridge-${VERSION}-py3-none-any.whl" dist/release-assets/
+          cp "dist/pypi/hashi_app-${VERSION}-py3-none-any.whl" dist/release-assets/
           cp dist/npm/*.tgz dist/release-assets/
-          (cd dist/release-assets && sha256sum * > "workspace-bridge-${VERSION}.sha256")
+          (cd dist/release-assets && sha256sum * > "hashi-app-${VERSION}.sha256")
           ls -lh dist/release-assets
       - name: Upload to already-published Release (no new tag)
         env:

@@ -5,12 +5,12 @@ from pathlib import Path
 import httpx
 import pytest
 
-from workspace_bridge import __version__
-from workspace_bridge.api import Handoff, INSTRUCTIONS, TOOLS, make_mcp
-from workspace_bridge.embedded_skill import SKILL_URI, SKILLS_EXTENSION, read_project_lead_skill, skill_hint
+from hashi import __version__
+from hashi.api import Handoff, INSTRUCTIONS, TOOLS, make_mcp
+from hashi.embedded_skill import SKILL_URI, SKILLS_EXTENSION, read_project_lead_skill, skill_hint
 from mcp_helpers import McpTransport, LEGACY, MODERN, PREFIX
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import Service
+from hashi.security import BridgeError
+from hashi.service import Service
 
 
 async def rpc(env, method="skills/get", params=None, *, version=LEGACY[-1], token=None):
@@ -132,9 +132,9 @@ async def test_resources_read_returns_exact_skill_text(env, version):
 
 
 @pytest.mark.parametrize("method,params", [
-    ("skills/get", {"uri": "skill://workspace-bridge/other/SKILL.md"}),
+    ("skills/get", {"uri": "skill://hashi/other/SKILL.md"}),
     ("skills/get", {}), ("skills/list", {"cursor": "x"}),
-    ("resources/read", {"uri": "skill://workspace-bridge/project-lead/../../secret"}),
+    ("resources/read", {"uri": "skill://hashi/project-lead/../../secret"}),
     ("resources/read", {"uri": "file:///etc/passwd"}), ("resources/read", {"uri": 1})])
 async def test_skill_methods_reject_caller_selected_content(env, method, params):
     response = await rpc(env, method, params)
@@ -177,7 +177,7 @@ async def test_skill_works_with_no_enabled_mapping_and_never_opens_workspace(env
 
 async def test_repository_skill_cannot_replace_bundled_guidance(env):
     (env["root"] / "SKILL.md").write_text("INJECTED_SENTINEL")
-    target = env["root"] / "workspace_bridge/skills/project-lead/SKILL.md"
+    target = env["root"] / "hashi/skills/project-lead/SKILL.md"
     target.parent.mkdir(parents=True)
     target.write_text("INJECTED_SENTINEL")
     assert "INJECTED_SENTINEL" not in (await rpc(env, "resources/read", {"uri": SKILL_URI})).text

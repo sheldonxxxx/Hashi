@@ -1,13 +1,13 @@
 # Operations
 
-Public operator guide for Workspace Bridge: state, services, manual
+Public operator guide for Hashi: state, services, manual
 upgrades, release identity, logging, notifications,
 recovery, and troubleshooting. For installation see [Setup](SETUP.md); for
 architecture see [Architecture](ARCHITECTURE.md).
 
 ## State, secrets, backups
 
-Default Bridge state is `$HOME/.local/state/workspace-bridge` (mode `0700`).
+Default Bridge state is `$HOME/.local/state/hashi` (mode `0700`).
 Configuration, SQLite database, and the salted admin password file (`admin-account.json`) are private;
 `bridge.sqlite3` is mode `0600`. Paired Nodes authenticate with keys and
 agent plugins have no tokens.
@@ -63,7 +63,7 @@ management change; writes and run mutations still queued authenticate and
 reload policy when their turn comes, so they see the change.
 
 Shared-token rotation is available in the local Manager while serving, or
-via `workspace-bridge rotate-bridge-token` while stopped. It generates a new
+via `hashi rotate-bridge-token` while stopped. It generates a new
 token, enables the gateway, and does not enable disabled mappings. Update
 the one tunnel environment and restart its process.
 
@@ -76,7 +76,7 @@ If the password is lost, run this on the Bridge host with the service user's
 private state directory (the Manager may remain running):
 
 ```sh
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" reset-admin-password
+hashi --state "$HOME/.local/state/hashi" reset-admin-password
 ```
 
 Recovery resets the account to username `admin` and temporary password
@@ -92,7 +92,7 @@ change promptly. Passwords are stored only as salted scrypt hashes; normal
 APIs never return them. Failed sign-ins are limited to five per minute.
 
 Paired Nodes have no token. Disable one in the Manager to refuse its
-connection, or re-pair it with `workspace-bridge pairing create --name <name>
+connection, or re-pair it with `hashi pairing create --name <name>
 --replace` to rotate its key; the old key is refused immediately and runs
 started under it become interrupted. The gateway certificate and key live in
 the Bridge state folder (`gateway-cert.pem`, `gateway-key.pem`); back them up
@@ -128,9 +128,9 @@ external writers and re-read changed files.
 
 ## Readiness checks
 
-`workspace-bridge doctor` prints Overall, Core, Workspaces, Adapters,
-Runnable routes, and Git evidence sections. Use `workspace-bridge doctor
---json` for the canonical JSON report and `workspace-bridge doctor
+`hashi doctor` prints Overall, Core, Workspaces, Adapters,
+Runnable routes, and Git evidence sections. Use `hashi doctor
+--json` for the canonical JSON report and `hashi doctor
 --offline` to guarantee zero adapter or network calls. The authenticated
 local-admin `GET /api/diagnostics` endpoint returns the same schema;
 `GET /api/diagnostics?offline=1` selects offline mode. Doctor and the API
@@ -147,7 +147,7 @@ Restart an older Bridge to enable live CLI diagnostics. State directories must
 be owned by the service account with mode 0700 for the local socket to be enabled.
 
 Doctor inspects only the selected state: use
-`workspace-bridge --state /path/to/bridge-state doctor`, and add `--offline`
+`hashi --state /path/to/bridge-state doctor`, and add `--offline`
 to skip network probes.
 
 Statuses are `pass`, `warning`, `action_required`, `failed`, and `unknown`.
@@ -179,19 +179,19 @@ Diagnostics do not prove account authorization, model behavior, test
 execution, or a client's handling of a response. `scripts/smoke_mcp.py
 --url http://127.0.0.1:8765/mcp` exercises read-only discovery over real
 local HTTP. It prompts for the shared gateway token or reads
-`WORKSPACE_BRIDGE_TOKEN`; the token is never a command-line argument.
+`HASHI_TOKEN`; the token is never a command-line argument.
 
 ## Release identity and compatibility
 
 Every deployed component exposes a bounded content-addressed identity:
-product `workspace-bridge`, product version, component name and version,
+product `hashi`, product version, component name and version,
 and a deterministic build ID over production inputs only. The build ID never
 uses live Git state, paths, timestamps, hostnames, tokens, mutable instance
 IDs, or environment-only values, and no paths or file inventories are
 exposed.
 
 Product and component versions stay distinct: the product version is the
-Workspace Bridge release (`1.0.0`); the component version is that
+Hashi release (`1.1.0`); the component version is that
 component's own version. Adapter and native semantic versions, protocol and
 feature versions, and Node/adapter revisions remain separate fields.
 
@@ -255,19 +255,19 @@ same module. By default the service is a user service:
 
 | Host | Bridge | Node |
 |---|---|---|
-| macOS | LaunchAgent `~/Library/LaunchAgents/com.workspace-bridge.bridge.plist` | LaunchAgent `~/Library/LaunchAgents/com.workspace-bridge.node.plist` |
-| Linux | user unit `~/.config/systemd/user/workspace-bridge.service` | user unit `~/.config/systemd/user/workspace-bridge-node.service` |
+| macOS | LaunchAgent `~/Library/LaunchAgents/com.hashi.bridge.plist` | LaunchAgent `~/Library/LaunchAgents/com.hashi.node.plist` |
+| Linux | user unit `~/.config/systemd/user/hashi.service` | user unit `~/.config/systemd/user/hashi-node.service` |
 
 ```sh
-workspace-bridge service install
-workspace-bridge service status
-workspace-bridge service restart
-workspace-bridge service uninstall
+hashi service install
+hashi service status
+hashi service restart
+hashi service uninstall
 ```
 
 ```sh
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" service install
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" service status
+hashi node --state "$HOME/.local/state/hashi-node" service install
+hashi node --state "$HOME/.local/state/hashi-node" service status
 ```
 
 Each also takes `start`, `stop` and `restart`. Run them as the account that
@@ -295,8 +295,8 @@ adapters, bindings and logs are kept.
 
 A service has no shell environment. Put Bridge settings in `bridge.env` in the
 Bridge state folder (mode `0600`), one `KEY=value` per line. Only
-`WB_NODE_GATEWAY_HOST`, `WB_NODE_GATEWAY_URL`, `WB_DISCORD_WEBHOOK_URL`,
-`WB_ADMIN_ALLOWED_HOSTS` and `WB_LOG_LEVEL` are accepted; any other line is an
+`HASHI_NODE_GATEWAY_HOST`, `HASHI_NODE_GATEWAY_URL`, `HASHI_DISCORD_WEBHOOK_URL`,
+`HASHI_ADMIN_ALLOWED_HOSTS` and `HASHI_LOG_LEVEL` are accepted; any other line is an
 error, and a variable set in the real environment wins. Restart the service
 after editing it. The Manager does not control launchd or systemd.
 
@@ -325,12 +325,12 @@ error code, `stopped`, or `unknown` when the status is stale.
 Agents are not separate services. Each adapter is a plugin the Node runs as
 a child process, as the Node's OS user, under the Node's own service (or the
 Bridge's, for the embedded Node); see [Runtimes](RUNTIMES.md#supervision).
-Add, test and remove them with `workspace-bridge node adapter ...` on the
+Add, test and remove them with `hashi node adapter ...` on the
 Node host. Each plugin's stderr goes to `plugins/<adapter-id>/plugin.log`
 in the Node state folder, capped at 5 MiB with one previous file kept.
 
 A Node opens no listening port: it dials the Bridge's Node gateway, and it is
-never exposed through the MCP tunnel. Setting `WB_ADMIN_ALLOWED_HOSTS` widens
+never exposed through the MCP tunnel. Setting `HASHI_ADMIN_ALLOWED_HOSTS` widens
 only the admin listener to `0.0.0.0` with those `Host` values allowed (MCP
 unaffected); invalid values fail closed.
 
@@ -343,13 +343,13 @@ or arbitrary command tool.
 ## Logging
 
 In the foreground, `serve` logs to stderr. A managed service (the definition
-sets `WB_SERVICE=1`) writes its own log under `logs/` in its state folder:
+sets `HASHI_SERVICE=1`) writes its own log under `logs/` in its state folder:
 `bridge.log` or `node.log`, rotated at 10 MiB with two previous files kept
 (`0700` directory, `0600` files). launchd and systemd capture only what
 escapes logging, such as an interpreter crash, in `bridge.stderr.log` or
 `node.stderr.log` on macOS (or the journal for a Linux unit); the process
 empties that file at start once it passes 1 MiB. No helper process, journald,
-logrotate, timer or cron configuration is installed. `WB_LOG_LEVEL` sets the
+logrotate, timer or cron configuration is installed. `HASHI_LOG_LEVEL` sets the
 level.
 
 ## Runtime Protocol runs and restart recovery
@@ -495,20 +495,20 @@ Upgrade what you use, then restart the Bridge service (which restarts the
 embedded Node and its plugins):
 
 ```sh
-uv tool upgrade workspace-bridge
-npm install -g workspace-bridge-pi-host-adapter
-workspace-bridge --version
-workspace-bridge service restart
+uv tool upgrade hashi
+npm install -g hashi-pi-host-adapter
+hashi --version
+hashi service restart
 ```
 
 On a host with a paired Node, restart it the same way; it restarts its
 plugins:
 
 ```sh
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" service restart
+hashi node --state "$HOME/.local/state/hashi-node" service restart
 ```
 
-An install with the Claude extra (`uv tool install 'workspace-bridge[claude]'`)
+An install with the Claude extra (`uv tool install 'hashi-app[claude]'`)
 keeps it on upgrade. A host that runs a Node from a source checkout (an
 editable install) needs only the restart after `git pull`.
 

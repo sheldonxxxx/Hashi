@@ -16,7 +16,7 @@ the Bridge, and its private key stays in the Node state (`0600`). Pairing
 codes are 128-bit, single use, expire after 10 minutes, and are stored only
 as hashes. Requests carrying a browser `Origin` are refused, and repeated
 authentication failures are throttled. The gateway binds loopback unless
-`WB_NODE_GATEWAY_HOST` is set; expose it only on a private network or VPN.
+`HASHI_NODE_GATEWAY_HOST` is set; expose it only on a private network or VPN.
 A paired Node trusts its Bridge fully. Nodes open no listening port; the
 embedded Node is called inside the Bridge process.
 
@@ -120,7 +120,7 @@ The Bridge persists only canonical event identity, bounded workspace/handoff lab
 Node and adapter ID/name, runtime type and run IDs, timestamps, and allowlisted request kind/action metadata. It
 does not persist prompts, results, source, commands, external paths, arbitrary
 provider payloads, webhook endpoints, or tokens in notification tables. The
-`WB_DISCORD_WEBHOOK_URL` value is read from local process configuration and held
+`HASHI_DISCORD_WEBHOOK_URL` value is read from local process configuration and held
 only by the Discord adapter. Discord payloads suppress mentions and contain the same
 metadata-only event envelope. Channel result codes/details are bounded and
 redacted; raw HTTP bodies are discarded. Delivery failures cannot change run state,
@@ -165,7 +165,7 @@ The SQLite quota is a preventive allocation gate, not an OS disk quota; WAL/jour
 
 Never tunnel the admin listener. Admin passwords and browser sessions never authorize MCP requests. For stronger isolation use a dedicated service identity that can read only selected projects and write only private state plus the projects you allow it to edit. Configure and test those permissions yourself before treating them as enforced. Run only one bridge process per state directory.
 
-The admin listener is loopback-only by default. Setting `WB_ADMIN_ALLOWED_HOSTS`
+The admin listener is loopback-only by default. Setting `HASHI_ADMIN_ALLOWED_HOSTS`
 (admin only; MCP is unaffected) is the sole opt-in remote-admin path: a
 comma-separated list of bare hostnames/IPs (no ports, schemes or wildcards)
 that widens only the admin listener to `0.0.0.0` and allows those `Host` values
@@ -211,7 +211,7 @@ ran or that an independent audit occurred.
 Nodes are paired or embedded; the Bridge stores only a paired Node's public
 key. Agents run as plugins: child processes of
 their Node with no port, no credential, and the Node's environment minus
-every `WB_*` variable. They do not receive provider credentials from
+every `HASHI_*` variable. They do not receive provider credentials from
 Bridge.
 
 Each conversation is bound to one enabled workspace and exact same-Node

@@ -222,7 +222,7 @@ test("malformed, duplicate, and mismatched selects fail closed", async () => {
   const ui = entry.session.boundUiContext;
 
   // No preflight for this call: select resolves undefined, never pending.
-  const stray = await ui.select("WB_PERMISSION_V1:call-unknown", ASK_OPTIONS);
+  const stray = await ui.select("HASHI_PERMISSION_V1:call-unknown", ASK_OPTIONS);
   assert.equal(stray, undefined);
   assert.deepEqual(await adapter.listPermissions(projects.appA, session.id), []);
 
@@ -230,7 +230,7 @@ test("malformed, duplicate, and mismatched selects fail closed", async () => {
   entry.session.emit({ type: "tool_execution_start", toolCallId: "call-2",
     toolName: "edit", args: { path: "notes.txt" } });
   await new Promise((resolve) => setImmediate(resolve));
-  const wrong = await ui.select("WB_PERMISSION_V1:call-2", ["Yes", "No"]);
+  const wrong = await ui.select("HASHI_PERMISSION_V1:call-2", ["Yes", "No"]);
   assert.equal(wrong, undefined);
   assert.deepEqual(await adapter.listPermissions(projects.appA, session.id), []);
 
@@ -244,7 +244,7 @@ test("malformed, duplicate, and mismatched selects fail closed", async () => {
   entry.session.emit({ type: "tool_execution_start", toolCallId: "call-3",
     toolName: "bash", args: { command: "ls" } });
   await new Promise((resolve) => setImmediate(resolve));
-  const denied = await ui.select("WB_PERMISSION_V1:call-3", ASK_OPTIONS);
+  const denied = await ui.select("HASHI_PERMISSION_V1:call-3", ASK_OPTIONS);
   assert.equal(denied, undefined);
   assert.deepEqual(await adapter.listPermissions(projects.appA, session.id), []);
   await adapter.shutdown();
@@ -294,7 +294,7 @@ test("3D4 live shape: pending carries canonical session_id for the Bridge contra
   // zero pendings. The adapter pending row must carry the canonical
   // session_id the Bridge normalizer requires for strict session scoping.
   // Wire shape mirrors the verified transport: opaque
-  // WB_PERMISSION_V1:<toolCallId> marker (pipe-form call id as seen
+  // HASHI_PERMISSION_V1:<toolCallId> marker (pipe-form call id as seen
   // live), exact 3-option ask shape, start observed before select.
   const projects = makeProjects();
   const transport = createFakeTransport();
@@ -335,7 +335,7 @@ test("3D4 live shape: pending carries canonical session_id for the Bridge contra
     result: {}, isError: false });
   await new Promise((resolve) => setImmediate(resolve));
   const stale = await entry.session.boundUiContext.select(
-    `WB_PERMISSION_V1:${liveCallId}`, ASK_OPTIONS);
+    `HASHI_PERMISSION_V1:${liveCallId}`, ASK_OPTIONS);
   assert.equal(stale, undefined);
   assert.deepEqual(await adapter.listPermissions(projects.appA, session.id), []);
   await adapter.shutdown();

@@ -4,10 +4,10 @@ import time
 
 import pytest
 
-from workspace_bridge import run_checkpoints as module
-from workspace_bridge.node_client import NodeClient
-from workspace_bridge.runtime import RuntimeRejected
-from workspace_bridge.security import BridgeError
+from hashi import run_checkpoints as module
+from hashi.node_client import NodeClient
+from hashi.runtime import RuntimeRejected
+from hashi.security import BridgeError
 from test_run_coordinator import ADAPTER_ID, _finish_test_run, _second_job, modern_env  # noqa: F401
 
 
@@ -249,7 +249,7 @@ def test_overlapping_runs_in_one_workspace_are_reported(modern_env, payload):
 def test_mcp_git_diff_run_mode_schema_and_dispatch(modern_env):
     from pydantic import ValidationError
 
-    from workspace_bridge.api import TOOLS
+    from hashi.api import TOOLS
     service, ws_id, token, job, native, _ = modern_env
     run = _start(service, ws_id, token, job)
     model = TOOLS["git_diff"][0]
@@ -275,7 +275,7 @@ async def test_manager_and_mcp_http_surfaces(modern_env):
 
     from admin_helpers import admin_cookie
     from mcp_helpers import McpTransport
-    from workspace_bridge.api import make_admin, make_mcp
+    from hashi.api import make_admin, make_mcp
     service, ws_id, token, job, native, _ = modern_env
     run = _start(service, ws_id, token, job)
     (_root(service, ws_id) / "feature.py").write_text("VALUE = 2\n")

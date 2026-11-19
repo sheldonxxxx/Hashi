@@ -1,5 +1,5 @@
 """RunCoordinator completion and interaction snapshots reach signed webhooks."""
-from workspace_bridge.event_broker import EventBroker, FINISHED, NEEDS_ATTENTION
+from hashi.event_broker import EventBroker, FINISHED, NEEDS_ATTENTION
 from test_run_coordinator import ADAPTER_ID, modern_env, _finish_test_run, _persist_pending_interaction
 from event_fakes import CallbackReceiver, TEST_SECRET, TEST_URL
 

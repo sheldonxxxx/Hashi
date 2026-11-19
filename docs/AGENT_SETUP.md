@@ -1,7 +1,7 @@
 # Agent setup runbook
 
 Use this runbook when a user asks an AI/coding agent to install or configure
-Workspace Bridge. [Setup](SETUP.md) is the canonical human guide;
+Hashi. [Setup](SETUP.md) is the canonical human guide;
 [Contributing](../CONTRIBUTING.md) covers repository development.
 
 Follow the steps in order, using the user's existing choices and approvals.
@@ -67,8 +67,8 @@ These are generic examples, not detected settings:
 
 | Component | State path | Port |
 |---|---|---|
-| Bridge (with its embedded Node) | `$HOME/.local/state/workspace-bridge` | MCP `8765`, Manager `8766`, Node gateway `8767` |
-| Paired Node on another host | `$HOME/.local/state/workspace-bridge-node` | none (dials out) |
+| Bridge (with its embedded Node) | `$HOME/.local/state/hashi` | MCP `8765`, Manager `8766`, Node gateway `8767` |
+| Paired Node on another host | `$HOME/.local/state/hashi-node` | none (dials out) |
 | Agent plugins | inside the Node state (`plugins/<adapter-id>/`), or the Bridge state for the embedded Node | none |
 
 Use distinct available ports in `1024–65535` on the Bridge host. Keep
@@ -80,8 +80,8 @@ home or filesystem root. The Node owns files, Git, handoffs, and adapter
 secrets under its `allowed_roots` ceiling; the Bridge never opens roots directly.
 
 Default to loopback. The Node gateway binds `127.0.0.1` unless
-`WB_NODE_GATEWAY_HOST` names another address; for paired Nodes, agree on that
-address (normally the Bridge's VPN IP) and any `WB_NODE_GATEWAY_URL` hostname
+`HASHI_NODE_GATEWAY_HOST` names another address; for paired Nodes, agree on that
+address (normally the Bridge's VPN IP) and any `HASHI_NODE_GATEWAY_URL` hostname
 before starting the Bridge. Never expose a Node through the MCP tunnel.
 
 Services are user services by default. `--root` (a LaunchDaemon or a system
@@ -96,9 +96,9 @@ On each host, choose **one** Python install command:
 
 ```sh
 # Without a Claude Code instance:
-uv tool install workspace-bridge
+uv tool install hashi-app
 # With a Claude Code instance (includes the optional SDK):
-uv tool install 'workspace-bridge[claude]'
+uv tool install 'hashi-app[claude]'
 ```
 
 The Python package provides the Bridge, the Node, and the Codex, Claude Code,
@@ -109,14 +109,14 @@ existing installation requires `--force`, include the replacement in the plan.
 Only on hosts selected for Pi:
 
 ```sh
-npm install -g workspace-bridge-pi-host-adapter
+npm install -g hashi-pi-host-adapter
 ```
 
 Check the installed product:
 
 ```sh
-workspace-bridge --version
-workspace-bridge --help
+hashi --version
+hashi --help
 ```
 
 **Checkpoint:** report installed versions or the sanitized failure.
@@ -126,9 +126,9 @@ workspace-bridge --help
 Run on the Bridge host, using the approved projects parent:
 
 ```sh
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" init \
+hashi --state "$HOME/.local/state/hashi" init \
   --mcp-port 8765 --admin-port 8766
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" local-node enable \
+hashi --state "$HOME/.local/state/hashi" local-node enable \
   --allow-root "$HOME/Projects"
 ```
 
@@ -138,17 +138,17 @@ there is no adapter port, token or service.
 
 ```sh
 # Pi only:
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" local-node adapter add pi --name Pi
+hashi --state "$HOME/.local/state/hashi" local-node adapter add pi --name Pi
 # Codex only:
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" local-node adapter add codex --name Codex
+hashi --state "$HOME/.local/state/hashi" local-node adapter add codex --name Codex
 # Claude Code only:
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" local-node adapter add claude --name "Claude Code"
+hashi --state "$HOME/.local/state/hashi" local-node adapter add claude --name "Claude Code"
 ```
 
 Follow [Runtimes](RUNTIMES.md) for login and Claude settings-layer choices
 (`--set setting_sources=...`).
 
-**Checkpoint:** run `workspace-bridge --state <bridge-state> local-node adapter
+**Checkpoint:** run `hashi --state <bridge-state> local-node adapter
 test <adapter-id>` for each added adapter and report success or the stated
 reason. Do not delete or reinitialize incomplete existing state.
 
@@ -157,14 +157,14 @@ reason. Do not delete or reinitialize incomplete existing state.
 Install and check the Bridge service:
 
 ```sh
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" service install
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" service status
+hashi --state "$HOME/.local/state/hashi" service install
+hashi --state "$HOME/.local/state/hashi" service status
 ```
 
 `service install` also starts it: a LaunchAgent on macOS, a systemd user unit
 on Linux, running as the state owner without `sudo`. A Linux user unit
 starts at boot only with lingering enabled; `status` reports
-`starts_at_boot`. Put any `WB_*` settings (such as `WB_NODE_GATEWAY_HOST`) in
+`starts_at_boot`. Put any `HASHI_*` settings (such as `HASHI_NODE_GATEWAY_HOST`) in
 `bridge.env` in the Bridge state folder (mode `0600`) and restart the
 service. The embedded Node starts its agent plugins itself.
 
@@ -181,19 +181,19 @@ Skip this step for a single host. For each other Node host, the user issues a
 pairing string on the Bridge host:
 
 ```sh
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" pairing create --name laptop
+hashi --state "$HOME/.local/state/hashi" pairing create --name laptop
 ```
 
 Then, on the Node host:
 
 ```sh
-NODE_STATE="$HOME/.local/state/workspace-bridge-node"
-workspace-bridge node --state "$NODE_STATE" init --allow-root "$HOME/Projects"
-workspace-bridge node --state "$NODE_STATE" pair 'wbpair1:...'
-workspace-bridge node --state "$NODE_STATE" adapter add codex --name Codex
-workspace-bridge node --state "$NODE_STATE" adapter test <adapter-id>
-workspace-bridge node --state "$NODE_STATE" service install
-workspace-bridge node --state "$NODE_STATE" service status
+NODE_STATE="$HOME/.local/state/hashi-node"
+hashi node --state "$NODE_STATE" init --allow-root "$HOME/Projects"
+hashi node --state "$NODE_STATE" pair 'wbpair1:...'
+hashi node --state "$NODE_STATE" adapter add codex --name Codex
+hashi node --state "$NODE_STATE" adapter test <adapter-id>
+hashi node --state "$NODE_STATE" service install
+hashi node --state "$NODE_STATE" service status
 ```
 
 The user runs `pairing create` and `pair` themselves, or approves you running
@@ -250,7 +250,7 @@ connection without sharing secrets. Local health checks do not prove this.
 Run Doctor against the running Bridge's state:
 
 ```sh
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" doctor
+hashi --state "$HOME/.local/state/hashi" doctor
 ```
 
 Add `--json` for structured output or `--offline` to skip network and adapter

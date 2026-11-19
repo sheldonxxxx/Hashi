@@ -7,10 +7,10 @@ import pytest
 
 from conftest import patch_node_runtime
 from PIL import Image
-from workspace_bridge.node_service import NodeService
-from workspace_bridge.run_images import validate_images
-from workspace_bridge.security import BridgeError, digest
-from workspace_bridge.api import AgentStartRun
+from hashi.node_service import NodeService
+from hashi.run_images import validate_images
+from hashi.security import BridgeError, digest
+from hashi.api import AgentStartRun
 
 
 def test_node_decodes_and_audits_run_images(tmp_path,monkeypatch):

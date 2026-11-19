@@ -14,9 +14,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from workspace_bridge import cli
-from workspace_bridge.diagnostics import failure_report
-from workspace_bridge.doctor_rpc import LocalDiagnostics, REQUEST, SOCKET_NAME, read_report
+from hashi import cli
+from hashi.diagnostics import failure_report
+from hashi.doctor_rpc import LocalDiagnostics, REQUEST, SOCKET_NAME, read_report
 
 
 @pytest.fixture
@@ -102,7 +102,7 @@ def test_standalone_fallback_is_valid_json_and_offline_never_connects(
     if offline:
         def forbidden(*args, **kwargs):
             pytest.fail("Offline Doctor must not contact the local service")
-        monkeypatch.setattr("workspace_bridge.doctor_rpc.read_report", forbidden)
+        monkeypatch.setattr("hashi.doctor_rpc.read_report", forbidden)
     result = cli._doctor(state, offline=offline, as_json=True)
     report = json.loads(capsys.readouterr().out)
     assert result == 0
@@ -181,7 +181,7 @@ def test_endpoint_cleanup_does_not_remove_a_replacement(private_state):
 def test_partial_startup_cleans_its_socket(private_state, monkeypatch):
     def denied(*args, **kwargs):
         raise PermissionError("cannot set socket permissions")
-    monkeypatch.setattr("workspace_bridge.doctor_rpc.os.chmod", denied)
+    monkeypatch.setattr("hashi.doctor_rpc.os.chmod", denied)
     server = LocalDiagnostics(SimpleNamespace(state=private_state), {})
     assert not server.start()
     assert not (private_state / SOCKET_NAME).exists()
@@ -201,8 +201,8 @@ def test_running_cli_service_serves_doctor_and_removes_socket_on_shutdown(privat
     service = cli.Service(state, config, run_coordinator_background=False)
     service.manage_bridge("rotate_token")
     service.close()
-    command = [sys.executable, "-m", "workspace_bridge.cli", "--state", str(state)]
-    environment = {key: value for key, value in os.environ.items() if not key.startswith("WB_")}
+    command = [sys.executable, "-m", "hashi.cli", "--state", str(state)]
+    environment = {key: value for key, value in os.environ.items() if not key.startswith("HASHI_")}
     process = subprocess.Popen([*command, "serve"], stdout=subprocess.DEVNULL,
                                stderr=subprocess.PIPE, env=environment, text=True)
     try:

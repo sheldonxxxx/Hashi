@@ -9,15 +9,15 @@ from pathlib import Path
 import pytest
 import httpx
 
-from workspace_bridge.api import Handoff, make_admin
-from workspace_bridge.cli import initialize
-from workspace_bridge.codex_host_adapter import CodexHostAdapter
-from workspace_bridge.notifications import NotificationManager
-from workspace_bridge.runtime import RuntimeRejected
-from workspace_bridge import security_profiles as sp
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import Service
-from workspace_bridge.wbrp import Descriptor
+from hashi.api import Handoff, make_admin
+from hashi.cli import initialize
+from hashi.codex_host_adapter import CodexHostAdapter
+from hashi.notifications import NotificationManager
+from hashi.runtime import RuntimeRejected
+from hashi import security_profiles as sp
+from hashi.security import BridgeError
+from hashi.service import Service
+from hashi.wbrp import Descriptor
 
 from test_codex_host_adapter import FakeCodexRpc
 from notification_fakes import RecordingChannel
@@ -798,7 +798,7 @@ def test_bridge_start_reconcile_interaction_and_activity(modern_env):
 
 
 def test_runtime_outcome_mapping_covers_all_terminal_events():
-    from workspace_bridge.run_coordinator import RunCoordinator
+    from hashi.run_coordinator import RunCoordinator
     assert {outcome: RunCoordinator._outcome_event_type(outcome) for outcome in (
         "succeeded", "failed", "cancelled", "interrupted", "orphaned")} == {
             "succeeded": "run_completed", "failed": "run_failed",
@@ -846,7 +846,7 @@ def test_slow_notification_does_not_block_run_state_transition(modern_env):
         def deliver(self, event):
             self.entered.set()
             self.release.wait()
-            from workspace_bridge.notifications import NotificationResult
+            from hashi.notifications import NotificationResult
             return NotificationResult("sent", 1)
 
     channel = BlockingChannel()
@@ -1232,7 +1232,7 @@ def test_list_agent_adapters_reports_bounded_descriptor_ok(modern_env):
 
 
 def test_list_agent_adapters_descriptor_failure_safe_and_readiness_unchanged(modern_env, monkeypatch):
-    from workspace_bridge.runtime import RuntimeUnavailable
+    from hashi.runtime import RuntimeUnavailable
     service, ws_id, _, _, _, _ = modern_env
     ws = service.workspace(ws_id)
     policy = service.workspace_route_policy(ws)["routes"][ADAPTER_ID]

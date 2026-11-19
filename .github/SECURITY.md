@@ -1,13 +1,13 @@
 # Security policy
 
-Workspace Bridge connects a remote model to files and agents on your machine,
+Hashi connects a remote model to files and agents on your machine,
 so we treat security reports as the highest priority.
 
 ## Supported versions
 
 Only the latest release receives security fixes. Upgrade with
-`uv tool upgrade workspace-bridge` (and the Pi adapter with
-`npm install -g workspace-bridge-pi-host-adapter`), then restart affected
+`uv tool upgrade hashi` (and the Pi adapter with
+`npm install -g hashi-pi-host-adapter`), then restart affected
 services.
 
 ## Reporting a vulnerability
@@ -15,7 +15,7 @@ services.
 Please **do not open a public issue** for a vulnerability.
 
 Report it privately through
-[GitHub private vulnerability reporting](https://github.com/sheldonxxxx/workspace-bridge/security/advisories/new).
+[GitHub private vulnerability reporting](https://github.com/sheldonxxxx/hashi/security/advisories/new).
 Include the affected version, your deployment shape (single host or paired
 Nodes; which runtimes), reproduction steps, and the impact you observed.
 

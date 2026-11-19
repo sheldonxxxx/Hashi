@@ -1,6 +1,6 @@
 // Agent Protocol v2 over stdio for the Pi adapter.
 //
-// A supervising Workspace Bridge Node starts `workspace-bridge-pi-adapter
+// A supervising Hashi Node starts `hashi-pi-adapter
 // --stdio`, sends `initialize` with the projects root and plugin settings,
 // then named JSON-RPC requests, one JSON object per line. Responses are
 // written whole, one line each. Nothing else may write to stdout in this

@@ -7,10 +7,10 @@ import time
 
 import pytest
 
-from workspace_bridge import security_profiles as sp
-from workspace_bridge.codex_host_adapter import AdapterFailure, CodexHostAdapter
-from workspace_bridge.codex_rpc import CodexRpcError
-from workspace_bridge.plugin_host import invoke
+from hashi import security_profiles as sp
+from hashi.codex_host_adapter import AdapterFailure, CodexHostAdapter
+from hashi.codex_rpc import CodexRpcError
+from hashi.plugin_host import invoke
 
 
 class FakeCodexRpc:
@@ -540,14 +540,14 @@ def test_non_owned_and_outside_workspace_refused(codex_adapter, tmp_path):
 def test_thread_start_failure_has_safe_host_diagnostics(codex_adapter, caplog):
     import logging as _logging
 
-    from workspace_bridge import codex_host_adapter as _host_module
+    from hashi import codex_host_adapter as _host_module
 
     adapter, workspace, rpc = codex_adapter
     rpc.thread_start_error = (
-        "denied at /Users/private/project; WB_RUNTIME_TOKEN=super-secret-token")
+        "denied at /Users/private/project; HASHI_RUNTIME_TOKEN=super-secret-token")
     rpc.stderr = "launch failed for /Volumes/private/data; api_key=sk-proj-" + "x" * 32
 
-    with caplog.at_level("WARNING", logger="workspace_bridge.codex_host_adapter"):
+    with caplog.at_level("WARNING", logger="hashi.codex_host_adapter"):
         with pytest.raises(AdapterFailure) as exc:
             new_conversation(adapter, workspace)
 
@@ -563,8 +563,8 @@ def test_thread_start_failure_has_safe_host_diagnostics(codex_adapter, caplog):
     assert "launch failed" not in visible
     assert len(visible) <= 400
     message = caplog.records[-1].getMessage()
-    assert caplog.records[-1].name == "workspace_bridge.codex_host_adapter"
-    assert _host_module._LOG.name == "workspace_bridge.codex_host_adapter"
+    assert caplog.records[-1].name == "hashi.codex_host_adapter"
+    assert _host_module._LOG.name == "hashi.codex_host_adapter"
     assert "thread/start" in message and "denied" in message
     assert "launch failed" in message
     assert "[PATH]" in message and "[REDACTED_SECRET]" in message
@@ -777,7 +777,7 @@ def test_native_engine_loss_terminates_once_with_static_diagnostic(tmp_path, cap
     try:
         assert callable(rpc.on_unexpected_exit)
         assert getattr(rpc.on_unexpected_exit, "__self__", None) is adapter
-        with caplog.at_level("CRITICAL", logger="workspace_bridge.codex_host_adapter"):
+        with caplog.at_level("CRITICAL", logger="hashi.codex_host_adapter"):
             rpc.on_unexpected_exit()
             rpc.on_unexpected_exit()
         assert exits == [1]
@@ -818,9 +818,9 @@ def test_conversation_5xx_boundary_logs_sanitized(codex_adapter, caplog):
         def create_conversation(self, body):
             raise AdapterFailure(
                 "boom at /Users/private/project for /Volumes/private/data; "
-                "WB_RUNTIME_TOKEN=super-secret-token", 502, "runtime_unavailable")
+                "HASHI_RUNTIME_TOKEN=super-secret-token", 502, "runtime_unavailable")
 
-    with caplog.at_level("WARNING", logger="workspace_bridge.plugin"):
+    with caplog.at_level("WARNING", logger="hashi.plugin"):
         caplog.clear()
         kind, error = invoke(_FailingConversations(), "conversations.create",
                              {"body": {"workspaceId": "ws-one"}})
@@ -844,7 +844,7 @@ def test_conversation_4xx_not_logged_as_5xx(codex_adapter, caplog):
             raise AdapterFailure("Unknown or changed security profile", 409,
                                  "profile_mismatch")
 
-    with caplog.at_level("WARNING", logger="workspace_bridge.plugin"):
+    with caplog.at_level("WARNING", logger="hashi.plugin"):
         caplog.clear()
         kind, error = invoke(_RejectingConversations(), "conversations.create",
                              {"body": {"workspaceId": "ws-one"}})

@@ -17,7 +17,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: Output of `workspace-bridge --version`.
+      description: Output of `hashi --version`.
     validations:
       required: true
   - type: dropdown
@@ -44,5 +44,5 @@ body:
     id: doctor
     attributes:
       label: Doctor output
-      description: Relevant, reviewed lines from `workspace-bridge doctor`.
+      description: Relevant, reviewed lines from `hashi doctor`.
       render: text

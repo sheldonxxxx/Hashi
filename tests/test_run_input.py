@@ -6,10 +6,10 @@ import pytest
 
 from admin_helpers import admin_cookie
 from mcp_helpers import McpTransport
-from workspace_bridge.api import TOOLS, make_admin, make_mcp
-from workspace_bridge.runtime import RuntimeUnavailable, RuntimeUnsupported
-from workspace_bridge.security import BridgeError
-from workspace_bridge.wbrp import RuntimeClient, validate_run_state
+from hashi.api import TOOLS, make_admin, make_mcp
+from hashi.runtime import RuntimeUnavailable, RuntimeUnsupported
+from hashi.security import BridgeError
+from hashi.wbrp import RuntimeClient, validate_run_state
 from notification_fakes import RecordingChannel
 from test_run_coordinator import (  # noqa: F401
     ADAPTER_ID, modern_env, attach_notification_channel, wait_for_notifications,
@@ -344,7 +344,7 @@ def test_stale_receipt_snapshot_does_not_undo_delivery(modern_env):
 
 
 def test_input_tools_are_scoped_mutating_open_world():
-    from workspace_bridge.api import DESTRUCTIVE_TOOLS, OPEN_WORLD_TOOLS
+    from hashi.api import DESTRUCTIVE_TOOLS, OPEN_WORLD_TOOLS
     model, _, readonly, idempotent = TOOLS["send_run_input"]
     assert not readonly and idempotent
     assert "send_run_input" in DESTRUCTIVE_TOOLS and "send_run_input" in OPEN_WORLD_TOOLS
@@ -354,7 +354,7 @@ def test_input_tools_are_scoped_mutating_open_world():
 
 @pytest.mark.parametrize("mode", ["queue", "steer"])
 def test_legacy_adapter_without_receipts_never_receives_input(monkeypatch, mode):
-    from workspace_bridge.wbrp import Descriptor
+    from hashi.wbrp import Descriptor
     client = RuntimeClient(ADAPTER_ID, "codex", None)
     descriptor = Descriptor.parse({"protocol": {"major": 1}, "runtime": {
         "id": "codex", "instanceId": "test"}, "features": {

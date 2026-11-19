@@ -1,6 +1,6 @@
 # Architecture
 
-Source-accurate reference for Workspace Bridge: Bridge control plane
+Source-accurate reference for Hashi: Bridge control plane
 plus local Manager, authoritative Nodes, Node-supervised agent plugins
 (Claude Code, Codex, OpenCode, Pi), exact workspace routes, Agent Protocol
 v2, optional secure MCP tunnel, native services on macOS and Linux, manual
@@ -286,8 +286,8 @@ tunnelled.
   enabled). `--root`, run as root, installs a LaunchDaemon or a system unit
   that starts at boot; the service still runs as the account that owns the
   state folder.
-- Definitions contain only the launcher (`python -m workspace_bridge.cli
-  --state <state> serve` or the Node equivalent) and `WB_SERVICE=1`, never
+- Definitions contain only the launcher (`python -m hashi.cli
+  --state <state> serve` or the Node equivalent) and `HASHI_SERVICE=1`, never
   tokens or project roots, plus a marker line; a definition without the
   marker is never replaced or removed. Agent plugins are child processes of
   the Node, not services. `service status` combines OS state with a bounded
@@ -297,7 +297,7 @@ tunnelled.
 ## Release identity and skew
 
 Every deployed component exposes a bounded content-addressed identity with
-product `workspace-bridge`, the product version, component name and
+product `hashi`, the product version, component name and
 version, and a deterministic build ID over production inputs only. The
 product version is the release; the component version is that component's
 own version; adapter and native semantic versions stay separate fields.

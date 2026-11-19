@@ -9,9 +9,9 @@
 //
 // Operational logging: one-line JSON records with `timestamp`, `level`,
 // `component`, `event`, plus allowlisted bounded scalar fields only
-// (see logging.mjs). WB_LOG_LEVEL (DEBUG/INFO/WARNING/ERROR, default INFO)
+// (see logging.mjs). HASHI_LOG_LEVEL (DEBUG/INFO/WARNING/ERROR, default INFO)
 // filters records before writing. In stdio mode every record goes to stderr;
-// stdout carries protocol lines only. An invalid nonblank WB_LOG_LEVEL fails
+// stdout carries protocol lines only. An invalid nonblank HASHI_LOG_LEVEL fails
 // startup safely without exposing env values or paths.
 import { PiAdapter } from "./adapter.mjs";
 import { checkPiBinary, isAgentDirAllowed, loadConfig } from "./config.mjs";
@@ -21,7 +21,7 @@ import { canonicalizeProjectsDir, canonicalizeWorktreesDir } from "./paths.mjs";
 import { serveStdio } from "./stdio.mjs";
 
 export function createLog(env = process.env) {
-  // loadConfig validates WB_LOG_LEVEL; the logger then enforces it.
+  // loadConfig validates HASHI_LOG_LEVEL; the logger then enforces it.
   const level = loadConfig(env).logLevel;
   return createLogger({ level });
 }
@@ -70,15 +70,15 @@ export function buildMain(env = process.env, options = {}) {
   return { config, piCheck, projectsRoot, projectsError, agentDirOk, usable, log, loginPath };
 }
 
-// `--stdio`: Agent Protocol v2 for a supervising Workspace Bridge Node. The
+// `--stdio`: Agent Protocol v2 for a supervising Hashi Node. The
 // real stdout carries protocol lines only; every other stdout write, logs
 // included, is sent to stderr.
 export function buildStdioAdapter(params, env = process.env) {
   const settings = params.settings && typeof params.settings === "object" ? params.settings : {};
-  const merged = { ...env, WB_PI_PROJECTS_DIR: String(params.projectsRoot || "") };
-  if (typeof settings.pi_binary === "string") merged.WB_PI_BINARY = settings.pi_binary;
+  const merged = { ...env, HASHI_PI_PROJECTS_DIR: String(params.projectsRoot || "") };
+  if (typeof settings.pi_binary === "string") merged.HASHI_PI_BINARY = settings.pi_binary;
   if (typeof settings.agent_dir === "string") merged.PI_CODING_AGENT_DIR = settings.agent_dir;
-  if (typeof settings.log_level === "string") merged.WB_LOG_LEVEL = settings.log_level;
+  if (typeof settings.log_level === "string") merged.HASHI_LOG_LEVEL = settings.log_level;
   const built = buildMain(merged);
   if (!built.projectsRoot) {
     throw built.projectsError || new Error("Pi projects root is unavailable");
@@ -97,7 +97,7 @@ export function buildStdioAdapter(params, env = process.env) {
 const isEntry = typeof process.argv[1] === "string" && (
   process.argv[1].endsWith("main.mjs")
   || process.argv[1].endsWith("pi-adapter.mjs")
-  || process.argv[1].endsWith("workspace-bridge-pi-adapter")
+  || process.argv[1].endsWith("hashi-pi-adapter")
 );
 
 const stdioMode = isEntry && process.argv.includes("--stdio");
@@ -108,12 +108,12 @@ if (stdioMode) {
   serveStdio({
     write: (line) => protocolWrite(`${line}\n`),
     buildAdapter: (params) => buildStdioAdapter(params),
-    onLog: createLogger({ level: process.env.WB_LOG_LEVEL || "INFO" }),
+    onLog: createLogger({ level: process.env.HASHI_LOG_LEVEL || "INFO" }),
   });
 }
 
 if (isEntry && !stdioMode) {
-  process.stderr.write("usage: workspace-bridge-pi-adapter --stdio\n"
-    + "Started by a Workspace Bridge Node as an agent plugin; there is no HTTP mode.\n");
+  process.stderr.write("usage: hashi-pi-adapter --stdio\n"
+    + "Started by a Hashi Node as an agent plugin; there is no HTTP mode.\n");
   process.exit(2);
 }

@@ -6,11 +6,11 @@ import time
 
 import pytest
 
-from workspace_bridge import security_profiles as sp
-from workspace_bridge.opencode_host_adapter import OpenCodeHostAdapter, tool_decision
-from workspace_bridge.plugin_host import invoke
-from workspace_bridge.claude_host_adapter import AdapterFailure
-from workspace_bridge.wbrp import validate_run_state, Descriptor
+from hashi import security_profiles as sp
+from hashi.opencode_host_adapter import OpenCodeHostAdapter, tool_decision
+from hashi.plugin_host import invoke
+from hashi.claude_host_adapter import AdapterFailure
+from hashi.wbrp import validate_run_state, Descriptor
 
 
 class FakeNative:
@@ -45,7 +45,7 @@ class FakeNative:
                 self.adapter.ready.add(query['location[directory]'])
             return {}
         if path == '/api/plugin':
-            return {'data': [{'id':'workspace-bridge.permissions.v1','state':{'status':'active'}}]}
+            return {'data': [{'id':'hashi.permissions.v1','state':{'status':'active'}}]}
         if path == '/api/model':
             return {'data':[{'id':'fake', 'providerID':'local', 'name':'Fake',
                 'capabilities':{'input':['text','image']}, 'variants':[{'id':'high'}]}]}

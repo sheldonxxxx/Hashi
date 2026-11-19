@@ -8,8 +8,8 @@ import httpx
 import pytest
 
 from admin_helpers import admin_cookie
-from workspace_bridge.api import make_admin
-from workspace_bridge.security import BridgeError
+from hashi.api import make_admin
+from hashi.security import BridgeError
 
 from test_run_coordinator import ADAPTER_ID, modern_env, _finish_test_run, _persist_pending_interaction  # noqa: F401
 

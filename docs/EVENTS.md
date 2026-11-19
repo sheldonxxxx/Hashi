@@ -1,6 +1,6 @@
 # MCP run events for ChatGPT
 
-Workspace Bridge implements the webhook contract documented in
+Hashi implements the webhook contract documented in
 [OpenAI MCP Events](https://developers.openai.com/plugins/build/mcp-events).
 ChatGPT can monitor run completion and pending interactions in Work chats on
 ChatGPT web, Work chats with Cloud selected in the desktop app, and dots.
@@ -31,8 +31,8 @@ update does not replace the MCP server or rescan its event catalog.
 
 | Event | Data beyond common identifiers |
 |---|---|
-| `workspace_bridge.run.finished` | `outcome`: `succeeded`, `failed`, `cancelled`, `interrupted`, `orphaned` or `blocked`; optional `checks`: `state` (`complete` or `unavailable`) with `passed` and `failed` counts |
-| `workspace_bridge.run.needs_attention` | Optional Bridge-issued `interaction_id` and allowlisted `request_kind` |
+| `hashi.run.finished` | `outcome`: `succeeded`, `failed`, `cancelled`, `interrupted`, `orphaned` or `blocked`; optional `checks`: `state` (`complete` or `unavailable`) with `passed` and `failed` counts |
+| `hashi.run.needs_attention` | Optional Bridge-issued `interaction_id` and allowlisted `request_kind` |
 
 Every subscription requires `arguments.workspace_id`, an exact enabled mapping
 returned by `list_workspaces`. Optional `arguments.run_id` restricts it to one
@@ -126,11 +126,11 @@ completion/error codes, without subscription arguments, destinations or secrets.
 
 ## Test with ChatGPT
 
-1. Rescan the existing Workspace Bridge MCP connection. Confirm both events
+1. Rescan the existing Hashi MCP connection. Confirm both events
    appear on the plugin page alongside tools.
-2. In a Work chat with Cloud selected, enable Workspace Bridge and ask:
+2. In a Work chat with Cloud selected, enable Hashi and ask:
 
-   > Discover my workspaces. Subscribe to workspace_bridge.run.finished for
+   > Discover my workspaces. Subscribe to hashi.run.finished for
    > the workspace I select. When a run finishes, read its authoritative result
    > and report its outcome and validation evidence. Do not start another run
    > or modify files automatically.
@@ -143,7 +143,7 @@ completion/error codes, without subscription arguments, destinations or secrets.
 5. Ask ChatGPT to stop monitoring. Confirm it calls `events/unsubscribe` and
    subsequent matching runs do not trigger this subscription.
 
-For interaction testing, monitor `workspace_bridge.run.needs_attention` and
+For interaction testing, monitor `hashi.run.needs_attention` and
 start a run whose request falls in the skill's ask-the-user list. ChatGPT must
 describe the request and wait for your decision, then answer with
 `decided_by: "owner"`; check the decision with `read_agent_interaction`. Test refresh, restart recovery and access revocation

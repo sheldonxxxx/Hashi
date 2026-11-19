@@ -1,8 +1,8 @@
 import json
 import os
 import pytest
-from workspace_bridge.security import BridgeError, HANDOFF, digest
-from workspace_bridge.api import Handoff
+from hashi.security import BridgeError, HANDOFF, digest
+from hashi.api import Handoff
 
 
 def call(env, name, **args):
@@ -59,7 +59,7 @@ def test_publish_never_writes_through_a_handoff_symlink(env, payload):
 
 
 def test_diagnostic_service_does_not_recover_active_publication(env, payload):
-    from workspace_bridge.service import Service
+    from hashi.service import Service
     svc = env['service']; ws = svc.workspace(env['id'])
     result = svc.prepare_handoff(ws, payload)
     with svc.db:

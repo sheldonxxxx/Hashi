@@ -820,7 +820,7 @@ test("unknown tools still deny when no extension is enabled", async () => {
 // ------------------------------------------------------------ trusted extension
 test("trusted permission hook passes extension tools, blocks malformed calls", async () => {
   const { safeDefaultPolicy, canonicalJson } = await import("../policy.mjs");
-  process.env.WB_PI_POLICY_JSON = canonicalJson(safeDefaultPolicy());
+  process.env.HASHI_PI_POLICY_JSON = canonicalJson(safeDefaultPolicy());
   try {
     const mod = await import("../trusted-permission-extension.mjs");
     assert.ok(!MANAGED_TOOLS.includes("alpha-tool"));
@@ -840,7 +840,7 @@ test("trusted permission hook passes extension tools, blocks malformed calls", a
       { toolName: "read", toolCallId: "call-2", input: { path: "notes.txt" } }, {});
     assert.equal(read, undefined);
   } finally {
-    delete process.env.WB_PI_POLICY_JSON;
+    delete process.env.HASHI_PI_POLICY_JSON;
   }
 });
 
@@ -993,14 +993,14 @@ test("real isolated-profile pi-web-access inventory + load (gated)", async (t) =
   // Provider-free validation against the REAL isolated Bridge profile.
   // Read-only: never modifies the installed package or its settings
   // (loading runs in-process against a throwaway agentDir plus the
-  // explicit package root). Run with WB_REAL_PROFILE_CHECK=1; skipped
+  // explicit package root). Run with HASHI_REAL_PROFILE_CHECK=1; skipped
   // otherwise.
-  if (process.env.WB_REAL_PROFILE_CHECK !== "1") {
-    t.skip("set WB_REAL_PROFILE_CHECK=1 to check the real isolated profile");
+  if (process.env.HASHI_REAL_PROFILE_CHECK !== "1") {
+    return t.skip("set HASHI_REAL_PROFILE_CHECK=1 to check the real isolated profile");
   }
-  const agentDir = path.join(os.homedir(), ".pi", "workspace-bridge");
+  const agentDir = path.join(os.homedir(), ".pi", "hashi");
   if (!fs.existsSync(path.join(agentDir, "settings.json"))) {
-    t.skip("isolated Bridge Pi profile is not present on this machine");
+    return t.skip("isolated Bridge Pi profile is not present on this machine");
   }
   const { packages } = readExtensionInventory(agentDir);
   const row = packages.find((p) => p.id === "npm:pi-web-access");

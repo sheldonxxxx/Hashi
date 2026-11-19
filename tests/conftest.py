@@ -1,23 +1,23 @@
 from pathlib import Path
 import os
 import pytest
-from workspace_bridge.cli import initialize
-from workspace_bridge.node_api import InProcessTransport
-from workspace_bridge.node_service import NodeService
-from workspace_bridge.service import Service
+from hashi.cli import initialize
+from hashi.node_api import InProcessTransport
+from hashi.node_service import NodeService
+from hashi.service import Service
 
 
 @pytest.fixture(autouse=True)
 def _isolated_bridge_environment(monkeypatch):
-    """Scrub ambient WB_* config so tests never inherit the developer shell.
+    """Scrub ambient HASHI_* config so tests never inherit the developer shell.
 
     Service construction reads os.environ (webhook URL, admin hosts, log
-    level). Without this, e.g. an exported WB_DISCORD_WEBHOOK_URL leaks a
+    level). Without this, e.g. an exported HASHI_DISCORD_WEBHOOK_URL leaks a
     Discord channel into test services and breaks channel assertions.
     Tests that need a variable set it explicitly via monkeypatch.
     """
     for name in list(os.environ):
-        if name.startswith("WB_"):
+        if name.startswith("HASHI_"):
             monkeypatch.delenv(name, raising=False)
 
 
@@ -114,7 +114,7 @@ def patch_node_runtime(monkeypatch, factory):
     ``factory`` receives ``(adapter_id, runtime_type, timeout=..., row=...)``;
     the Node still checks the adapter row and revision before constructing it.
     """
-    from workspace_bridge.node_service import NodeService
+    from hashi.node_service import NodeService
 
     def plugin_client(self, row, *, timeout=30):
         return factory(row["id"], row["runtime_type"], timeout=timeout, row=row)

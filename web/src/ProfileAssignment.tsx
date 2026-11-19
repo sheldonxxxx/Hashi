@@ -146,7 +146,7 @@ export function ProfileAssignment({
                 onChange={() => setSecuritySource("profile")}
               />
               <span>
-                <strong>Use a Workspace Bridge profile</strong>
+                <strong>Use a Hashi profile</strong>
                 <small>The agent enforces the profile's rules.</small>
               </span>
             </label>
@@ -156,7 +156,7 @@ export function ProfileAssignment({
           <div
             className="profile-assignment-list"
             role="group"
-            aria-label="Workspace Bridge profiles"
+            aria-label="Hashi profiles"
           >
             {loading && <p role="status">Loading profiles…</p>}
             {!loading && profiles.length > 0 && !selectedId && (

@@ -7,8 +7,8 @@ Review the diff by hand: the vectors are the contract the Pi evaluator is
 checked against, so a changed expectation is a behavior change on both sides.
 """
 import json, os, sys, tempfile
-from workspace_bridge import security_profiles as sp
-from workspace_bridge.security import BridgeError
+from hashi import security_profiles as sp
+from hashi.security import BridgeError
 
 B = sp.BUILTINS
 custom = {**B["reviewed"], "protected": ["secrets/**", "*.pem", " build/ "],
@@ -102,7 +102,7 @@ for name, raws in {
 
 layout = {"dirs": ["ws/src", "ws/secrets", "out/shared/deep"],
           "symlinks": {"ws/link_out": "../out", "ws/self": "."}}
-data = {"about": "Shared security profile vectors; generated from workspace_bridge.security_profiles "
+data = {"about": "Shared security profile vectors; generated from hashi.security_profiles "
                  "and checked by tests/test_security_profiles.py and the Pi policy tests. In paths "
                  "and profiles, /@out is the real path of the out directory of the layout.",
         "profiles": profiles, "canonical": canonical, "invalid": invalid, "globs": globs,

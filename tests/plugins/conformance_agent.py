@@ -15,9 +15,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from workspace_bridge import security_profiles as sp  # noqa: E402
-from workspace_bridge.plugin_host import PluginServer  # noqa: E402
-from workspace_bridge.security import BridgeError  # noqa: E402
+from hashi import security_profiles as sp  # noqa: E402
+from hashi.plugin_host import PluginServer  # noqa: E402
+from hashi.security import BridgeError  # noqa: E402
 
 MODEL = "fake/model-1"
 

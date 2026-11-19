@@ -7,12 +7,12 @@ import httpx
 import pytest
 
 from admin_helpers import admin_cookie
-from workspace_bridge import checks as module
+from hashi import checks as module
 from mcp_helpers import McpTransport
-from workspace_bridge.api import TOOLS, make_admin, make_mcp
-from workspace_bridge.event_broker import EventBroker
-from workspace_bridge.notifications import DiscordChannel, NotificationEvent
-from workspace_bridge.security import BridgeError
+from hashi.api import TOOLS, make_admin, make_mcp
+from hashi.event_broker import EventBroker
+from hashi.notifications import DiscordChannel, NotificationEvent
+from hashi.security import BridgeError
 from test_run_coordinator import ADAPTER_ID, _finish_test_run, modern_env  # noqa: F401
 
 

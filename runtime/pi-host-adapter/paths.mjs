@@ -27,7 +27,7 @@ export function canonicalizeWorktreesDir(raw) {
 
 export function canonicalizeProjectsDir(raw) {
   const value = String(raw || "").trim();
-  if (!value) throw new PathError("WB_PI_PROJECTS_DIR is not configured", "not_configured");
+  if (!value) throw new PathError("HASHI_PI_PROJECTS_DIR is not configured", "not_configured");
   const absolute = path.isAbsolute(value) ? path.normalize(value) : path.resolve(value);
   let real;
   try {

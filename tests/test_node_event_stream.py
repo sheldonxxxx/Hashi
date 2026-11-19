@@ -9,8 +9,8 @@ import pytest
 
 from conftest import patch_node_runtime
 
-from workspace_bridge import node_api, node_link
-from workspace_bridge.node_service import NodeService
+from hashi import node_api, node_link
+from hashi.node_service import NodeService
 
 
 @pytest.fixture

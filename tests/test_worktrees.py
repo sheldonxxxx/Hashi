@@ -8,13 +8,13 @@ from pathlib import Path
 
 import pytest
 
-from workspace_bridge.api import Handoff
-from workspace_bridge.cli import initialize
-from workspace_bridge.codex_host_adapter import CodexHostAdapter
-from workspace_bridge.run_roots import run_directory
-from workspace_bridge.run_worktrees import RETENTION_SECONDS, RunWorktrees
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import Service
+from hashi.api import Handoff
+from hashi.cli import initialize
+from hashi.codex_host_adapter import CodexHostAdapter
+from hashi.run_roots import run_directory
+from hashi.run_worktrees import RETENTION_SECONDS, RunWorktrees
+from hashi.security import BridgeError
+from hashi.service import Service
 
 from conftest import attach_test_node, create_test_adapter
 from test_codex_host_adapter import FakeCodexRpc
@@ -30,7 +30,7 @@ def _git(root: Path, *args: str) -> str:
 
 def _repo(root: Path) -> None:
     _git(root, "init", "-q", "--initial-branch=main")
-    _git(root, "config", "user.name", "Workspace Bridge Test")
+    _git(root, "config", "user.name", "Hashi Test")
     _git(root, "config", "user.email", "bridge-test@example.invalid")
     (root / "app.py").write_text("print('one')\n")
     (root / ".gitignore").write_text("build/\n")

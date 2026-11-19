@@ -15,18 +15,18 @@ import pytest
 
 from test_codex_host_adapter import FakeCodexRpc
 
-from workspace_bridge.api import make_admin
-from workspace_bridge.node_service import NodeService
-from workspace_bridge.notifications import (DiscordChannel, NotificationEvent,
+from hashi.api import make_admin
+from hashi.node_service import NodeService
+from hashi.notifications import (DiscordChannel, NotificationEvent,
                                             NotificationManager,
                                             codex_quota_summary)
-from workspace_bridge.runtime import RuntimeUnsupported
-from workspace_bridge.security import BridgeError, digest
-from workspace_bridge.wbrp import (Descriptor, RuntimeClient,
+from hashi.runtime import RuntimeUnsupported
+from hashi.security import BridgeError, digest
+from hashi.wbrp import (Descriptor, RuntimeClient,
                                    validate_usage_limits)
-from workspace_bridge.codex_host_adapter import (AdapterFailure,
+from hashi.codex_host_adapter import (AdapterFailure,
                                                  CodexHostAdapter)
-from workspace_bridge.plugin_host import LocalPluginTransport, invoke
+from hashi.plugin_host import LocalPluginTransport, invoke
 
 ADAPTER_ID = "adapter_000000000000000000000001"
 

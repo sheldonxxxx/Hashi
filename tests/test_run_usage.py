@@ -6,18 +6,18 @@ from pathlib import Path
 
 import pytest
 
-from workspace_bridge import security_profiles as sp
-from workspace_bridge.api import Handoff, make_admin
-from workspace_bridge.cli import initialize
-from workspace_bridge.codex_host_adapter import (
+from hashi import security_profiles as sp
+from hashi.api import Handoff, make_admin
+from hashi.cli import initialize
+from hashi.codex_host_adapter import (
     CodexHostAdapter,
     _normalize_codex_usage,
 )
-from workspace_bridge.run_coordinator import _normalize_bridge_usage, _stored_bridge_usage
-from workspace_bridge.runtime import RuntimeUnavailable
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import Service
-from workspace_bridge.wbrp import validate_run_state
+from hashi.run_coordinator import _normalize_bridge_usage, _stored_bridge_usage
+from hashi.runtime import RuntimeUnavailable
+from hashi.security import BridgeError
+from hashi.service import Service
+from hashi.wbrp import validate_run_state
 
 from test_codex_host_adapter import FakeCodexRpc
 from test_run_coordinator import DirectAdapter, modern_env, ADAPTER_ID  # noqa: F401

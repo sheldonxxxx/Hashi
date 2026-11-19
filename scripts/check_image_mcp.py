@@ -21,12 +21,12 @@ def main() -> int:
     args = parser.parse_args()
     try:
         validate_url(args.url)
-        token = os.environ.get('WORKSPACE_BRIDGE_TOKEN') or getpass.getpass('Shared bridge token: ')
+        token = os.environ.get('HASHI_TOKEN') or getpass.getpass('Shared bridge token: ')
         if not token or len(token) > 256 or '\n' in token or '\r' in token:
             raise ValueError('invalid token')
         client = Client(args.url, token)
         client.call('initialize', {'protocolVersion': LEGACY, 'capabilities': {},
-                                  'clientInfo': {'name': 'workspace-bridge-image-check', 'version': '0.6.0'}})
+                                  'clientInfo': {'name': 'hashi-image-check', 'version': '0.6.0'}})
         for modern in (False, True):
             result = client.call('tools/call', {'name': 'read_file', 'arguments': {
                 'workspace_id': args.workspace_id, 'path': args.path, 'representation': 'image'}},

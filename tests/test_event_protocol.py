@@ -1,10 +1,10 @@
 """MCP 2.0 discovery and the documented ChatGPT webhook subscription shape."""
 import httpx
 import pytest
-from workspace_bridge.api import make_mcp, TOOLS
-from workspace_bridge.event_broker import FINISHED
+from hashi.api import make_mcp, TOOLS
+from hashi.event_broker import FINISHED
 from mcp_helpers import McpTransport, LEGACY, MODERN, PREFIX
-from workspace_bridge.webhook_transport import CallbackError
+from hashi.webhook_transport import CallbackError
 from test_event_broker import broker_env, publish
 from event_fakes import TEST_SECRET, TEST_URL
 

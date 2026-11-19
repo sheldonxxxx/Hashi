@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from workspace_bridge import cli
-from workspace_bridge.plugin_conformance import run_kit
-from workspace_bridge.plugin_protocol import validate_manifest
+from hashi import cli
+from hashi.plugin_conformance import run_kit
+from hashi.plugin_protocol import validate_manifest
 
 AGENT = Path(__file__).parent / "plugins" / "conformance_agent.py"
 ENFORCES = ["read_inside", "read_outside", "write_inside", "write_outside", "shell", "web",

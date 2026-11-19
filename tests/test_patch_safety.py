@@ -6,11 +6,11 @@ from concurrent.futures import ThreadPoolExecutor
 import httpx
 import pytest
 
-from workspace_bridge.api import DESTRUCTIVE_TOOLS, TOOLS, make_mcp
-from workspace_bridge.embedded_skill import read_project_lead_skill
+from hashi.api import DESTRUCTIVE_TOOLS, TOOLS, make_mcp
+from hashi.embedded_skill import read_project_lead_skill
 from mcp_helpers import argument_error, McpTransport, LEGACY, MODERN, PREFIX
-from workspace_bridge.security import BridgeError, HANDOFF, MAX_WRITE, digest
-from workspace_bridge.service import Service
+from hashi.security import BridgeError, HANDOFF, MAX_WRITE, digest
+from hashi.service import Service
 
 NOTE = 'notes/plan.md'
 

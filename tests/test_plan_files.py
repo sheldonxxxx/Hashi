@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from workspace_bridge import security_profiles as sp
-from workspace_bridge.plan_files import PlanStore
-from workspace_bridge.security import BridgeError
+from hashi import security_profiles as sp
+from hashi.plan_files import PlanStore
+from hashi.security import BridgeError
 from test_run_coordinator import ADAPTER_ID, _finish_test_run, _second_job, modern_env  # noqa: F401
 
 DOCS = {"TASK.md": "# Task\nDo it.\n", "CONTEXT.md": "Context.\n", "ACCEPTANCE.md": "- Done.\n"}

@@ -6,7 +6,7 @@
 // inline extension factory built by createTrustedPermissionExtension()
 // with the immutable per-session policy snapshot and canonical session
 // cwd closed over (previously via `-e <this file>` plus a
-// WB_PI_POLICY_JSON environment variable). Never discovered from
+// HASHI_PI_POLICY_JSON environment variable). Never discovered from
 // project/global locations. Pi itself has no sandbox: this is pre-tool
 // policy/approval with exact suspended-call resume, not OS containment.
 // Shell Allow runs with native macOS-user authority and can bypass
@@ -16,7 +16,7 @@
 // - tool_call pre-execution interception uses the shared evaluator.
 // - deny => {block: true, reason}; allow => continue.
 // - ask => await ctx.ui.select(markerTitle, OPTIONS). The marker title is
-//   EXACTLY `WB_PERMISSION_V1:<toolCallId>` (opaque: no tool, resource,
+//   EXACTLY `HASHI_PERMISSION_V1:<toolCallId>` (opaque: no tool, resource,
 //   command, or path text) so the adapter can correlate the select to the
 //   exact preflighted call. All human-readable permission metadata comes
 //   ONLY from adapter preflight/evaluator state, never from this title.
@@ -43,7 +43,7 @@
 // unknown. A missing/empty toolCallId fails closed.
 import { evaluateToolCall, validatePolicy } from "./policy.mjs";
 
-export const MARKER_PREFIX = "WB_PERMISSION_V1:";
+export const MARKER_PREFIX = "HASHI_PERMISSION_V1:";
 export const OPTION_ONCE = "Allow once";
 export const OPTION_ALWAYS = "Always allow exact target this session";
 export const OPTION_REJECT = "Reject";
@@ -53,7 +53,7 @@ export const OPTION_REJECT = "Reject";
 export const MANAGED_TOOLS = ["read", "grep", "find", "ls", "edit", "write", "bash"];
 
 function loadSnapshot() {
-  const raw = process.env.WB_PI_POLICY_JSON || "";
+  const raw = process.env.HASHI_PI_POLICY_JSON || "";
   if (!raw) return null;
   try {
     return validatePolicy(JSON.parse(raw));

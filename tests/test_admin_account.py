@@ -4,10 +4,10 @@ import os
 import httpx
 import pytest
 
-from workspace_bridge.admin_account import AdminAccount
-from workspace_bridge.api import make_admin
-from workspace_bridge.cli import initialize, main
-from workspace_bridge.security import BridgeError, digest
+from hashi.admin_account import AdminAccount
+from hashi.api import make_admin
+from hashi.cli import initialize, main
+from hashi.security import BridgeError, digest
 
 
 def test_bootstrap_stores_salted_hash_only(tmp_path):

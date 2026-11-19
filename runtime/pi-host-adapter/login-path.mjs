@@ -25,8 +25,8 @@ export const MAX_LOGIN_PATH_ENTRIES = 256;
 export const MAX_LOGIN_SHELL_OUTPUT = 65536;
 export const LOGIN_PATH_TIMEOUT_MS = 5000;
 
-const MARK_BEGIN = "__WB_LOGIN_PATH_BEGIN__";
-const MARK_END = "__WB_LOGIN_PATH_END__";
+const MARK_BEGIN = "__HASHI_LOGIN_PATH_BEGIN__";
+const MARK_END = "__HASHI_LOGIN_PATH_END__";
 // Probe isolated on dedicated fd 3: ordinary stdout/stderr are ignored at
 // the spawn boundary and never buffered. Only fd 3 is piped and captured
 // with an explicit maxBuffer bound. No temp file is used.

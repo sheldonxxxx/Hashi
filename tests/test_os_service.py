@@ -10,12 +10,12 @@ import sys
 
 import pytest
 
-from workspace_bridge import oplog
-from workspace_bridge.cli import initialize
-from workspace_bridge.node_cli import initialize_node
-from workspace_bridge.os_service import (BRIDGE, ENV_FILE, MARKER, NODE, Launchd, Systemd,
+from hashi import oplog
+from hashi.cli import initialize
+from hashi.node_cli import initialize_node
+from hashi.os_service import (BRIDGE, ENV_FILE, MARKER, NODE, Launchd, Systemd,
                                          load_env_file, run_action)
-from workspace_bridge.security import BridgeError
+from hashi.security import BridgeError
 
 
 class FakeLaunchctl:
@@ -87,17 +87,17 @@ def test_launchd_user_agent_lifecycle(bridge_state, tmp_path):
     raw = agent.path.read_bytes()
     assert MARKER.encode() in raw
     plist = plistlib.loads(raw)
-    assert plist["Label"] == "com.workspace-bridge.bridge"
-    assert plist["ProgramArguments"] == [sys.executable, "-m", "workspace_bridge.cli",
+    assert plist["Label"] == "com.hashi.bridge"
+    assert plist["ProgramArguments"] == [sys.executable, "-m", "hashi.cli",
                                          "--state", str(bridge_state), "serve"]
-    assert plist["EnvironmentVariables"] == {"WB_SERVICE": "1"}
+    assert plist["EnvironmentVariables"] == {"HASHI_SERVICE": "1"}
     assert "UserName" not in plist
     assert plist["StandardErrorPath"] == str(bridge_state / "logs" / "bridge.stderr.log")
     assert (bridge_state / "logs").stat().st_mode & 0o777 == 0o700
     assert ["launchctl", "bootstrap", "gui/501", str(agent.path)] in fake.calls
 
     run_action(BRIDGE, "restart", bridge_state, manager=agent, euid=os.getuid(), probe=healthy)
-    assert fake.calls[-2] == ["launchctl", "kickstart", "-k", "gui/501/com.workspace-bridge.bridge"]
+    assert fake.calls[-2] == ["launchctl", "kickstart", "-k", "gui/501/com.hashi.bridge"]
     stopped = run_action(BRIDGE, "stop", bridge_state, manager=agent, euid=os.getuid(), probe=healthy)
     assert (stopped["loaded"], stopped["running"]) == (False, False) and "health" not in stopped
     run_action(BRIDGE, "start", bridge_state, manager=agent, euid=os.getuid(), probe=healthy)
@@ -118,7 +118,7 @@ def test_root_launch_daemon_runs_as_the_state_owner(node_state, tmp_path):
     run_action(NODE, "install", node_state, root=True, manager=daemon, euid=0, probe=healthy)
     plist = plistlib.loads(daemon.path.read_bytes())
     assert plist["UserName"] == pwd.getpwuid(os.getuid()).pw_name
-    assert plist["ProgramArguments"][1:3] == ["-m", "workspace_bridge.node_cli"]
+    assert plist["ProgramArguments"][1:3] == ["-m", "hashi.node_cli"]
     assert ["launchctl", "bootstrap", "system", str(daemon.path)] in fake.calls
 
 
@@ -128,9 +128,9 @@ def test_systemd_user_and_system_units(bridge_state, tmp_path):
     status = run_action(BRIDGE, "install", bridge_state, manager=unit, euid=os.getuid(), probe=healthy)
     text = unit.path.read_text()
     assert text.startswith(f"# {MARKER}\n")
-    assert "Environment=WB_SERVICE=1" in text and "WantedBy=default.target" in text
+    assert "Environment=HASHI_SERVICE=1" in text and "WantedBy=default.target" in text
     assert "User=" not in text
-    assert f"ExecStart={sys.executable} -m workspace_bridge.cli --state {bridge_state} serve" in text
+    assert f"ExecStart={sys.executable} -m hashi.cli --state {bridge_state} serve" in text
     assert [call[:2] for call in fake.calls if call[0] == "systemctl"][:4] == [
         ["systemctl", "--user"]] * 4
     assert status["starts_at_boot"] is False, "user units need lingering to start at boot"
@@ -224,10 +224,10 @@ def test_service_log_is_capped_in_process(tmp_path, monkeypatch):
     crash = tmp_path / "logs" / "node.stderr.log"
     crash.write_bytes(b"x" * (oplog.CRASH_LOG_BYTES + 1))
     monkeypatch.setattr(oplog, "LOG_FILE_BYTES", 2000)
-    logger = logging.getLogger("workspace_bridge.ops")
+    logger = logging.getLogger("hashi.ops")
     saved = list(logger.handlers)
     try:
-        oplog.configure_operational_logging("INFO", {"WB_SERVICE": "1"}, log_file=log_file)
+        oplog.configure_operational_logging("INFO", {"HASHI_SERVICE": "1"}, log_file=log_file)
         assert crash.stat().st_size == 0
         for _ in range(200):
             oplog.emit(logger, "INFO", "node", "node_link_retry", code="ConnectionRefusedError")
@@ -251,12 +251,12 @@ def test_foreground_logs_stay_on_stderr(tmp_path):
 
 def test_env_file_applies_allowlisted_settings_and_real_env_wins(bridge_state):
     path = bridge_state / ENV_FILE
-    path.write_text("# gateway on the VPN\nWB_NODE_GATEWAY_HOST=100.64.0.7\n"
-                    "WB_LOG_LEVEL='DEBUG'\n")
+    path.write_text("# gateway on the VPN\nHASHI_NODE_GATEWAY_HOST=100.64.0.7\n"
+                    "HASHI_LOG_LEVEL='DEBUG'\n")
     os.chmod(path, 0o600)
-    env = {"WB_LOG_LEVEL": "INFO"}
-    assert load_env_file(bridge_state, env) == ["WB_NODE_GATEWAY_HOST"]
-    assert env == {"WB_LOG_LEVEL": "INFO", "WB_NODE_GATEWAY_HOST": "100.64.0.7"}
+    env = {"HASHI_LOG_LEVEL": "INFO"}
+    assert load_env_file(bridge_state, env) == ["HASHI_NODE_GATEWAY_HOST"]
+    assert env == {"HASHI_LOG_LEVEL": "INFO", "HASHI_NODE_GATEWAY_HOST": "100.64.0.7"}
 
 
 @pytest.mark.parametrize("content", ["PATH=/tmp/evil\n", "not a setting\n"])
@@ -270,14 +270,14 @@ def test_env_file_refuses_unknown_or_malformed_lines(bridge_state, content):
 
 def test_env_file_must_be_private(bridge_state):
     path = bridge_state / ENV_FILE
-    path.write_text("WB_LOG_LEVEL=INFO\n")
+    path.write_text("HASHI_LOG_LEVEL=INFO\n")
     os.chmod(path, 0o644)
     with pytest.raises(BridgeError):
         load_env_file(bridge_state, {})
 
 
 def test_cli_exposes_root_as_an_explicit_flag(capsys):
-    from workspace_bridge.cli import main
+    from hashi.cli import main
     for argv in (["service", "install", "--help"], ["node", "service", "install", "--help"]):
         with pytest.raises(SystemExit):
             main(argv)

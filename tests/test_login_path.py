@@ -8,9 +8,9 @@ import sys
 
 import pytest
 
-from workspace_bridge import login_path
-from workspace_bridge.codex_host_adapter import CodexHostAdapter, _codex_cli_version
-from workspace_bridge.codex_rpc import CodexRpc
+from hashi import login_path
+from hashi.codex_host_adapter import CodexHostAdapter, _codex_cli_version
+from hashi.codex_rpc import CodexRpc
 
 
 def _fake_run(stdout, returncode=0):
@@ -19,7 +19,7 @@ def _fake_run(stdout, returncode=0):
         # conservative `-i -c <probe>` for the minimal sh family.
         assert "-i" in cmd and "-c" in cmd
         assert "printf" in cmd[-1]
-        assert "__WB_LOGIN_PATH_BEGIN__" in cmd[-1]
+        assert "__HASHI_LOGIN_PATH_BEGIN__" in cmd[-1]
         name = (cmd[0].rsplit("/", 1)[-1] or "").lower()
         if name in ("sh", "dash", "ash"):
             assert cmd[1:3] == ["-i", "-c"]
@@ -45,7 +45,7 @@ def test_interactive_login_invocation_and_regression():
         else:
             path = "/usr/bin:/bin"
         m = type("R", (), {})()
-        m.stdout = f"__WB_LOGIN_PATH_BEGIN__{path}__WB_LOGIN_PATH_END__"
+        m.stdout = f"__HASHI_LOGIN_PATH_BEGIN__{path}__HASHI_LOGIN_PATH_END__"
         m.returncode = 0
         return m
 
@@ -80,7 +80,7 @@ def test_fish_probe_uses_documented_join_form():
 
 
 def test_resolve_success_validates_and_exposes_safe_summary_only():
-    run = _fake_run("__WB_LOGIN_PATH_BEGIN__/usr/bin:/bin:/opt/tools/bin__WB_LOGIN_PATH_END__")
+    run = _fake_run("__HASHI_LOGIN_PATH_BEGIN__/usr/bin:/bin:/opt/tools/bin__HASHI_LOGIN_PATH_END__")
     result = login_path.resolve_login_path(_run=run, _shell="/bin/zsh")
     assert result["resolved"] is True
     assert result["path"] == "/usr/bin:/bin:/opt/tools/bin"
@@ -97,7 +97,7 @@ def test_resolve_success_validates_and_exposes_safe_summary_only():
 
 
 def test_noisy_shell_output_is_isolated_to_marked_value():
-    stdout = "Welcome to zsh\nmotd line 2\n__WB_LOGIN_PATH_BEGIN__/usr/bin:/bin__WB_LOGIN_PATH_END__\nbye\n"
+    stdout = "Welcome to zsh\nmotd line 2\n__HASHI_LOGIN_PATH_BEGIN__/usr/bin:/bin__HASHI_LOGIN_PATH_END__\nbye\n"
     result = login_path.resolve_login_path(_run=_fake_run(stdout), _shell="/bin/zsh")
     assert result["resolved"] is True
     assert result["path"] == "/usr/bin:/bin"
@@ -212,7 +212,7 @@ def test_invalid_paths_rejected_with_safe_codes():
         assert not ok, candidate
         assert got == code, candidate
         # Resolver maps validation failure to fallback without applying.
-        marked = f"__WB_LOGIN_PATH_BEGIN__{candidate}__WB_LOGIN_PATH_END__"
+        marked = f"__HASHI_LOGIN_PATH_BEGIN__{candidate}__HASHI_LOGIN_PATH_END__"
         result = login_path.resolve_login_path(_run=_fake_run(marked), _shell="/bin/sh")
         assert result["resolved"] is False
         assert result["path"] is None
@@ -221,13 +221,13 @@ def test_invalid_paths_rejected_with_safe_codes():
 
 
 def test_only_path_is_imported_other_env_untouched():
-    run = _fake_run("__WB_LOGIN_PATH_BEGIN__/usr/bin:/bin__WB_LOGIN_PATH_END__")
-    base = {"PATH": "/inherited", "WB_RUNTIME_TOKEN": "tok", "HOME": "/home/u"}
+    run = _fake_run("__HASHI_LOGIN_PATH_BEGIN__/usr/bin:/bin__HASHI_LOGIN_PATH_END__")
+    base = {"PATH": "/inherited", "HASHI_RUNTIME_TOKEN": "tok", "HOME": "/home/u"}
     env, result = login_path.runtime_env_with_login_path(
         base, _resolve=lambda: login_path.resolve_login_path(_run=run, _shell="/bin/zsh"))
     assert result["resolved"] is True
     assert env["PATH"] == "/usr/bin:/bin"
-    assert env["WB_RUNTIME_TOKEN"] == "tok"
+    assert env["HASHI_RUNTIME_TOKEN"] == "tok"
     assert env["HOME"] == "/home/u"
     assert base["PATH"] == "/inherited"
 
@@ -256,7 +256,7 @@ def test_codex_app_server_child_receives_resolved_env():
 
 
 def test_codex_version_probe_shares_app_server_env(tmp_path, monkeypatch):
-    from workspace_bridge import codex_host_adapter as mod
+    from hashi import codex_host_adapter as mod
 
     seen = {}
 

@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from workspace_bridge.security import BridgeError, SafeRoot
-from workspace_bridge.service import Service
+from hashi.security import BridgeError, SafeRoot
+from hashi.service import Service
 
 
 def call(env, tool, **args):

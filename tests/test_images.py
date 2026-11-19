@@ -14,13 +14,13 @@ import httpx
 from PIL import Image, PngImagePlugin
 import pytest
 
-from workspace_bridge.api import TOOLS, make_mcp
-from workspace_bridge.embedded_skill import read_project_lead_skill
-from workspace_bridge.media import (ImageReadResult, MAX_IMAGE_RESPONSE_BYTES, MAX_INPUT_BYTES,
+from hashi.api import TOOLS, make_mcp
+from hashi.embedded_skill import read_project_lead_skill
+from hashi.media import (ImageReadResult, MAX_IMAGE_RESPONSE_BYTES, MAX_INPUT_BYTES,
                                     MAX_PIXELS, MAX_PREVIEW_BYTES, read_image, sniff_image)
 from mcp_helpers import argument_error, McpTransport, LEGACY, MODERN, PREFIX
-from workspace_bridge.security import BridgeError, HANDOFF, MAX_FILE, SafeRoot, digest
-from workspace_bridge.service import Service
+from hashi.security import BridgeError, HANDOFF, MAX_FILE, SafeRoot, digest
+from hashi.service import Service
 
 
 def image_bytes(fmt="PNG", size=(120, 80), mode="RGB", **kwargs):
@@ -107,7 +107,7 @@ def test_same_relative_path_is_bound_to_selected_workspace(env):
 def test_unsafe_paths_never_reach_decoder(env, monkeypatch, path):
     def forbidden(*args, **kwargs):
         raise AssertionError("decoder must not run on denied paths")
-    monkeypatch.setattr("workspace_bridge.node_service.read_image", forbidden)
+    monkeypatch.setattr("hashi.node_service.read_image", forbidden)
     with pytest.raises(BridgeError):
         read(env, path)
 
@@ -147,7 +147,7 @@ def test_stale_hash_rejected_before_decode(env, monkeypatch):
     original = read(env)
     (env["root"] / "image.png").write_bytes(image_bytes(size=(80, 120)))
     def forbidden(*a, **kw): raise AssertionError("must check hash before decode")
-    monkeypatch.setattr("workspace_bridge.node_service.read_image", forbidden)
+    monkeypatch.setattr("hashi.node_service.read_image", forbidden)
     with pytest.raises(BridgeError) as exc:
         read(env, expected_sha256=original.metadata["sha256"])
     assert exc.value.code == "stale_evidence"
@@ -228,7 +228,7 @@ def test_other_color_modes_are_previewed(env, fmt, mode):
 def test_input_image_limit_rejected_without_decoder(env, monkeypatch):
     (env["root"] / "image.png").write_bytes(b"\x89PNG\r\n\x1a\n" + b"x" * MAX_INPUT_BYTES)
     def forbidden(*a, **kw): raise AssertionError("oversized image must not decode")
-    monkeypatch.setattr("workspace_bridge.node_service.read_image", forbidden)
+    monkeypatch.setattr("hashi.node_service.read_image", forbidden)
     with pytest.raises(BridgeError) as exc: read(env)
     assert exc.value.code == "too_large"
 
@@ -271,7 +271,7 @@ def test_truncated_png_fails(env):
 def test_no_external_document_or_vector_renderer(env, name, data, monkeypatch):
     (env["root"] / name).write_bytes(data)
     def forbidden(*a, **kw): raise AssertionError("unsupported format must not launch decoder")
-    monkeypatch.setattr("workspace_bridge.media.subprocess.run", forbidden)
+    monkeypatch.setattr("hashi.media.subprocess.run", forbidden)
     with pytest.raises(BridgeError) as exc: read(env, name, representation="image")
     assert exc.value.code == "unsupported_image"
     if name.endswith(".svg"):
@@ -311,7 +311,7 @@ def test_metadata_and_pixels_not_written_to_events(env):
 
 
 def test_worker_is_fixed_isolated_bytes_only(env, monkeypatch):
-    from workspace_bridge import media
+    from hashi import media
     (env["root"] / "image.png").write_bytes(image_bytes())
     real = media.subprocess.run
     def inspect(command, **kw):
@@ -329,17 +329,17 @@ def test_worker_is_fixed_isolated_bytes_only(env, monkeypatch):
 def test_worker_timeout_and_crash_are_safe_errors(env, monkeypatch):
     (env["root"] / "image.png").write_bytes(image_bytes())
     def timeout(*a, **kw): raise subprocess.TimeoutExpired(a[0], 10)
-    monkeypatch.setattr("workspace_bridge.media.subprocess.run", timeout)
+    monkeypatch.setattr("hashi.media.subprocess.run", timeout)
     with pytest.raises(BridgeError) as exc: read(env)
     assert exc.value.code == "image_timeout"
-    monkeypatch.setattr("workspace_bridge.media.subprocess.run", lambda *a, **kw: subprocess.CompletedProcess(a[0], -9))
+    monkeypatch.setattr("hashi.media.subprocess.run", lambda *a, **kw: subprocess.CompletedProcess(a[0], -9))
     with pytest.raises(BridgeError) as exc: read(env)
     assert exc.value.code == "image_decode_failed"
 
 
 def test_real_worker_timeout_is_killed(env, monkeypatch):
     (env["root"] / "image.png").write_bytes(image_bytes())
-    monkeypatch.setattr("workspace_bridge.media.IMAGE_TIMEOUT_SECONDS", .000001)
+    monkeypatch.setattr("hashi.media.IMAGE_TIMEOUT_SECONDS", .000001)
     with pytest.raises(BridgeError) as exc: read(env)
     assert exc.value.code == "image_timeout"
 
@@ -350,7 +350,7 @@ def test_real_worker_timeout_is_killed(env, monkeypatch):
                                            (b"x" * (MAX_IMAGE_RESPONSE_BYTES + 1), "image_limit")])
 def test_invalid_worker_output_is_never_exposed(env, monkeypatch, output, expected):
     (env["root"] / "image.png").write_bytes(image_bytes())
-    monkeypatch.setattr("workspace_bridge.media.subprocess.run", lambda *a, **kw: subprocess.CompletedProcess(a[0], 0, stdout=output))
+    monkeypatch.setattr("hashi.media.subprocess.run", lambda *a, **kw: subprocess.CompletedProcess(a[0], 0, stdout=output))
     with pytest.raises(BridgeError) as exc: read(env)
     assert exc.value.code == expected
 

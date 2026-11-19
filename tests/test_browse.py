@@ -3,9 +3,9 @@ import os
 
 import pytest
 
-from workspace_bridge.api import Grep
-from workspace_bridge.browse import glob_matcher
-from workspace_bridge.security import BridgeError, MAX_FILE, MAX_OUTPUT, redact
+from hashi.api import Grep
+from hashi.browse import glob_matcher
+from hashi.security import BridgeError, MAX_FILE, MAX_OUTPUT, redact
 
 
 def call(env, tool, **args):

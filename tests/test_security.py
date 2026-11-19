@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 import pytest
-from workspace_bridge.security import SafeRoot, BridgeError, allowed, parts, redact, MAX_FILE
-from workspace_bridge.cli import initialize
+from hashi.security import SafeRoot, BridgeError, allowed, parts, redact, MAX_FILE
+from hashi.cli import initialize
 
 @pytest.mark.parametrize("path", ["../secret", "/etc/passwd", "src/../../x", "src//main.py", "./src/main.py", "src/./main.py", "src/", "C:\\secret", "src/\x00", "src\nname", "a:b"])
 def test_paths_reject(path):

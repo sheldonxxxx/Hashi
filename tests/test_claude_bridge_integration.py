@@ -6,11 +6,11 @@ import types
 
 import pytest
 
-from workspace_bridge.api import Handoff
-from workspace_bridge.claude_host_adapter import ClaudeHostAdapter
-from workspace_bridge.cli import initialize
-from workspace_bridge.service import Service
-from workspace_bridge.wbrp import Descriptor
+from hashi.api import Handoff
+from hashi.claude_host_adapter import ClaudeHostAdapter
+from hashi.cli import initialize
+from hashi.service import Service
+from hashi.wbrp import Descriptor
 
 from conftest import attach_test_node, create_test_adapter
 from test_claude_host_adapter import (AssistantMessage, ResultMessage, SystemMessage,

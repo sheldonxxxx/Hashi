@@ -10,39 +10,39 @@ import {
 } from "../config.mjs";
 
 test("the plugin config has no network listener or token", () => {
-  const config = loadConfig({ WB_RUNTIME_TOKEN: "s3cret", WB_PI_ADAPTER_PORT: "9999" }, "/home/tester");
+  const config = loadConfig({ HASHI_RUNTIME_TOKEN: "s3cret", HASHI_PI_ADAPTER_PORT: "9999" }, "/home/tester");
   for (const key of ["host", "port", "token", "locked", "tokenConfigured"]) {
     assert.equal(key in config, false, key);
   }
 });
 
-test("PI_CODING_AGENT_DIR defaults to ~/.pi/workspace-bridge", () => {
-  assert.equal(defaultAgentDir("/home/tester"), path.join("/home/tester", ".pi", "workspace-bridge"));
-  assert.equal(resolveAgentDir("", "/home/tester"), path.join("/home/tester", ".pi", "workspace-bridge"));
+test("PI_CODING_AGENT_DIR defaults to ~/.pi/hashi", () => {
+  assert.equal(defaultAgentDir("/home/tester"), path.join("/home/tester", ".pi", "hashi"));
+  assert.equal(resolveAgentDir("", "/home/tester"), path.join("/home/tester", ".pi", "hashi"));
   const config = loadConfig({}, "/home/tester");
   assert.equal(config.agentDirExplicit, false);
-  assert.equal(config.agentDir, path.join("/home/tester", ".pi", "workspace-bridge"));
+  assert.equal(config.agentDir, path.join("/home/tester", ".pi", "hashi"));
   assert.ok(path.isAbsolute(config.agentDir));
 });
 
 test("agent dir honors explicit value with ~/$HOME/${HOME} expansion", () => {
-  assert.equal(expandAgentDir("~/.pi/workspace-bridge", "/home/t"), path.join("/home/t", ".pi/workspace-bridge"));
-  assert.equal(expandAgentDir("$HOME/.pi/workspace-bridge", "/home/t"), path.join("/home/t", ".pi/workspace-bridge"));
-  assert.equal(expandAgentDir("${HOME}/.pi/workspace-bridge", "/home/t"), path.join("/home/t", ".pi/workspace-bridge"));
+  assert.equal(expandAgentDir("~/.pi/hashi", "/home/t"), path.join("/home/t", ".pi/hashi"));
+  assert.equal(expandAgentDir("$HOME/.pi/hashi", "/home/t"), path.join("/home/t", ".pi/hashi"));
+  assert.equal(expandAgentDir("${HOME}/.pi/hashi", "/home/t"), path.join("/home/t", ".pi/hashi"));
   assert.equal(expandAgentDir("~", "/home/t"), "/home/t");
   assert.equal(expandAgentDir("$HOME", "/home/t"), "/home/t");
   assert.equal(expandAgentDir("/custom/agent-dir", "/home/t"), "/custom/agent-dir");
-  const config = loadConfig({ PI_CODING_AGENT_DIR: "$HOME/.pi/workspace-bridge" }, "/home/t");
+  const config = loadConfig({ PI_CODING_AGENT_DIR: "$HOME/.pi/hashi" }, "/home/t");
   assert.equal(config.agentDirExplicit, true);
-  assert.equal(config.agentDir, path.join("/home/t", ".pi/workspace-bridge"));
+  assert.equal(config.agentDir, path.join("/home/t", ".pi/hashi"));
   // Real default uses the actual home directory.
-  assert.equal(loadConfig({}).agentDir, path.join(os.homedir(), ".pi", "workspace-bridge"));
+  assert.equal(loadConfig({}).agentDir, path.join(os.homedir(), ".pi", "hashi"));
 });
 
 test("normal ~/.pi/agent tree and ~/.pi root are rejected", () => {
   assert.equal(isAgentDirAllowed(path.join("/home/t", ".pi", "agent"), "/home/t"), false);
   assert.equal(isAgentDirAllowed(path.join("/home/t", ".pi"), "/home/t"), false);
-  assert.equal(isAgentDirAllowed(path.join("/home/t", ".pi", "workspace-bridge"), "/home/t"), true);
+  assert.equal(isAgentDirAllowed(path.join("/home/t", ".pi", "hashi"), "/home/t"), true);
   assert.equal(isAgentDirAllowed("/tmp/elsewhere", "/home/t"), true);
 });
 
@@ -53,7 +53,7 @@ test("agent dir rejects tree descendants and symlink aliases without creating an
   const before = fs.readdirSync(home).sort();
   // Exact normal tree and descendants.
   assert.equal(isAgentDirAllowed(normalTree, home), false);
-  assert.equal(isAgentDirAllowed(path.join(normalTree, "workspace-bridge"), home), false);
+  assert.equal(isAgentDirAllowed(path.join(normalTree, "hashi"), home), false);
   assert.equal(isAgentDirAllowed(path.join(normalTree, "nested", "deep"), home), false);
   // Symlink directly to the normal tree.
   const directLink = path.join(home, "agent-link");
@@ -65,13 +65,13 @@ test("agent dir rejects tree descendants and symlink aliases without creating an
   fs.symlinkSync(normalTree, ancestorLink);
   assert.equal(isAgentDirAllowed(path.join(ancestorLink, "nested", "dir"), home), false);
   // Valid explicit dirs elsewhere, including the isolated default.
-  assert.equal(isAgentDirAllowed(path.join(home, ".pi", "workspace-bridge"), home), true);
+  assert.equal(isAgentDirAllowed(path.join(home, ".pi", "hashi"), home), true);
   assert.equal(isAgentDirAllowed(path.join(home, "elsewhere", "agent-dir"), home), true);
   assert.equal(isAgentDirAllowed("/Volumes/data/example", home), true);
   // Validation created nothing: only the fixtures we made exist.
   const after = fs.readdirSync(home).sort();
   assert.deepEqual(after, [...before, "agent-link", "alias-parent"].sort());
-  assert.ok(!fs.existsSync(path.join(home, ".pi", "workspace-bridge")));
+  assert.ok(!fs.existsSync(path.join(home, ".pi", "hashi")));
   assert.ok(!fs.existsSync(path.join(home, "elsewhere")));
 });
 
@@ -92,9 +92,9 @@ test("agent dir rejects physical target when ~/.pi/agent itself is a symlink", (
   // The symlink path itself is still rejected.
   assert.equal(isAgentDirAllowed(path.join(dotpi, "agent"), home), false);
   // Genuinely outside locations remain allowed, and nothing was created.
-  assert.equal(isAgentDirAllowed(path.join(home, ".pi", "workspace-bridge"), home), true);
+  assert.equal(isAgentDirAllowed(path.join(home, ".pi", "hashi"), home), true);
   assert.equal(isAgentDirAllowed(path.join(home, "other"), home), true);
-  assert.ok(!fs.existsSync(path.join(home, ".pi", "workspace-bridge")));
+  assert.ok(!fs.existsSync(path.join(home, ".pi", "hashi")));
   assert.ok(!fs.existsSync(path.join(home, "other")));
   assert.deepEqual(fs.readdirSync(physical), []);
 });

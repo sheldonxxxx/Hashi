@@ -8,13 +8,13 @@ from email.message import Message
 
 import pytest
 
-from workspace_bridge.cli import initialize
-from workspace_bridge.notifications import (
+from hashi.cli import initialize
+from hashi.notifications import (
     BRIDGE_USER_AGENT, DiscordChannel, NotificationEvent, NotificationManager,
     NotificationResult, notification_channels_from_environment,
 )
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import Service
+from hashi.security import BridgeError
+from hashi.service import Service
 
 from notification_fakes import RecordingChannel
 
@@ -130,11 +130,11 @@ def test_discord_retries_are_bounded_and_diagnostics_are_safe(monkeypatch):
 
 def test_discord_rejects_non_http_urls_and_environment_never_exposes_secret():
     assert notification_channels_from_environment({}) == []
-    assert notification_channels_from_environment({"WB_DISCORD_WEBHOOK_URL": "file:///etc/passwd"}) == []
+    assert notification_channels_from_environment({"HASHI_DISCORD_WEBHOOK_URL": "file:///etc/passwd"}) == []
     with pytest.raises(BridgeError):
         DiscordChannel("file:///etc/passwd")
     configured = notification_channels_from_environment(
-        {"WB_DISCORD_WEBHOOK_URL": "https://discord.example/hook"})
+        {"HASHI_DISCORD_WEBHOOK_URL": "https://discord.example/hook"})
     assert [channel.channel_id for channel in configured] == ["discord"]
 
 

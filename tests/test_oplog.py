@@ -7,11 +7,11 @@ import logging
 import pytest
 from pathlib import Path
 
-from workspace_bridge import oplog
-from workspace_bridge.security import BridgeError
+from hashi import oplog
+from hashi.security import BridgeError
 
 
-OPS_LOGGER = logging.getLogger("workspace_bridge.ops")
+OPS_LOGGER = logging.getLogger("hashi.ops")
 
 
 class Capture(logging.Handler):
@@ -49,8 +49,8 @@ def records(handler: Capture) -> list[dict]:
 # ------------------------------------------------------------------ contract
 def test_log_level_default_and_valid():
     assert oplog.log_level_from_env({}) == "INFO"
-    assert oplog.log_level_from_env({"WB_LOG_LEVEL": ""}) == "INFO"
-    assert oplog.log_level_from_env({"WB_LOG_LEVEL": "debug"}) == "DEBUG"
+    assert oplog.log_level_from_env({"HASHI_LOG_LEVEL": ""}) == "INFO"
+    assert oplog.log_level_from_env({"HASHI_LOG_LEVEL": "debug"}) == "DEBUG"
     assert oplog.parse_log_level("WARNING") == "WARNING"
 
 
@@ -135,6 +135,6 @@ def test_one_line_json_records(captured):
 # ------------------------------------------------------------------ config
 def test_uvicorn_access_log_stays_disabled():
     root = Path(__file__).resolve().parents[1]
-    text = (root / "workspace_bridge/cli.py").read_text()
+    text = (root / "hashi/cli.py").read_text()
     assert text.count("access_log=False") >= 2
     assert 'log_level="warning"' in text

@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from workspace_bridge.plugin_host import PluginServer  # noqa: E402
+from hashi.plugin_host import PluginServer  # noqa: E402
 
 
 class Failure(Exception):

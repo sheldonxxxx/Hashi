@@ -10,9 +10,9 @@ from threading import Event
 import httpx
 import pytest
 
-from workspace_bridge.api import TOOLS, make_admin, make_mcp
-from workspace_bridge.security import BridgeError, HANDOFF, SafeRoot, digest, write_allowed
-from workspace_bridge.service import Service
+from hashi.api import TOOLS, make_admin, make_mcp
+from hashi.security import BridgeError, HANDOFF, SafeRoot, digest, write_allowed
+from hashi.service import Service
 from mcp_helpers import argument_error, McpTransport, LEGACY, MODERN, PREFIX
 
 

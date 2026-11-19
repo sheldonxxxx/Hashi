@@ -15,11 +15,11 @@ import threading
 
 import pytest
 
-from workspace_bridge.api import AgentStartRun, Handoff
-from workspace_bridge.cli import initialize
-from workspace_bridge.codex_host_adapter import CodexHostAdapter
-from workspace_bridge.security import BridgeError
-from workspace_bridge.service import Service
+from hashi.api import AgentStartRun, Handoff
+from hashi.cli import initialize
+from hashi.codex_host_adapter import CodexHostAdapter
+from hashi.security import BridgeError
+from hashi.service import Service
 from test_codex_host_adapter import FakeCodexRpc
 from conftest import attach_test_node, create_test_adapter
 from test_run_coordinator import ADAPTER_ID, DirectAdapter, _finish_test_run, modern_env  # noqa: F401
@@ -386,7 +386,7 @@ def test_direct_instruction_mutual_exclusion_validation(simplified_env):
 async def test_direct_instruction_works_over_mcp_tool_surface(simplified_env):
     import httpx
     from mcp_helpers import argument_error, McpTransport
-    from workspace_bridge.api import make_mcp
+    from hashi.api import make_mcp
 
     service, ws_id, token, job, native, _ = simplified_env
     app = make_mcp(service)

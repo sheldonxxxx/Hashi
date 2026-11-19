@@ -1,21 +1,21 @@
 # Pi plugin
 
-The Pi agent plugin for [Workspace Bridge](https://github.com/sheldonxxxx/workspace-bridge):
+The Pi agent plugin for [Hashi](https://github.com/sheldonxxxx/hashi):
 plan in ChatGPT, build with your local agents. Install it on any host where
-you want ChatGPT to start bounded Pi runs through Workspace Bridge.
+you want ChatGPT to start bounded Pi runs through Hashi.
 
 ```sh
-npm install -g workspace-bridge-pi-host-adapter
+npm install -g hashi-pi-host-adapter
 ```
 
-This package owns Pi agent sessions on the host. It is not a service: a Workspace Bridge Node starts
-`workspace-bridge-pi-adapter --stdio` as a child process and talks to it over
+This package owns Pi agent sessions on the host. It is not a service: a Hashi Node starts
+`hashi-pi-adapter --stdio` as a child process and talks to it over
 Agent Protocol v2 (JSON-RPC on stdin and stdout). It has no port and no
 token. Run without `--stdio`, it prints usage and exits.
 
 For runtime behavior, profiles, and troubleshooting see
-[Runtimes](https://github.com/sheldonxxxx/workspace-bridge/blob/main/docs/RUNTIMES.md). For repo checks see
-[Contributing](https://github.com/sheldonxxxx/workspace-bridge/blob/main/CONTRIBUTING.md).
+[Runtimes](https://github.com/sheldonxxxx/hashi/blob/main/docs/RUNTIMES.md). For repo checks see
+[Contributing](https://github.com/sheldonxxxx/hashi/blob/main/CONTRIBUTING.md).
 
 ## Topology
 
@@ -27,8 +27,7 @@ Bridge control plane
 ```
 
 The adapter owns its Pi conversations, runs, interaction requests,
-and activity snapshots. It never adopts an unrelated Pi session. Workspace
-Bridge owns run authorization and durable cross-runtime records; Pi owns
+and activity snapshots. It never adopts an unrelated Pi session. Hashi owns run authorization and durable cross-runtime records; Pi owns
 native session files, model syntax, and enforcement.
 
 ## Profiles and host authority
@@ -77,9 +76,9 @@ observable through sanitized records containing only safe scalar fields.
 ## Add it to a Node
 
 ```sh
-npm install -g workspace-bridge-pi-host-adapter
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" adapter add pi --name Pi
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" adapter test <adapter-id>
+npm install -g hashi-pi-host-adapter
+hashi node --state "$HOME/.local/state/hashi-node" adapter add pi --name Pi
+hashi node --state "$HOME/.local/state/hashi-node" adapter test <adapter-id>
 ```
 
 The Node passes the projects root and these settings on start (set with
@@ -88,7 +87,7 @@ The Node passes the projects root and these settings on start (set with
 | Setting | Default | Notes |
 |---|---|---|
 | `pi_binary` | `pi` | Deployment signal only; sessions run in-process. |
-| `agent_dir` | `$HOME/.pi/workspace-bridge` | Isolated agent dir; never the normal agent tree. Use a different one per Pi adapter. |
+| `agent_dir` | `$HOME/.pi/hashi` | Isolated agent dir; never the normal agent tree. Use a different one per Pi adapter. |
 | `log_level` | `INFO` | `DEBUG`/`INFO`/`WARNING`/`ERROR`. |
 
 The projects root is canonicalized and must exist; every session directory

@@ -11,16 +11,16 @@ from pathlib import Path
 import pytest
 
 from conftest import attach_test_node
-from workspace_bridge.adapter_events import validate_event_page
-from workspace_bridge.api import Handoff
-from workspace_bridge.cli import initialize
-from workspace_bridge.node_cli import add_plugin_commands, run_plugin_command
-from workspace_bridge.node_service import NodeService
-from workspace_bridge.plugin_protocol import (builtin_manifests, to_rpc,
+from hashi.adapter_events import validate_event_page
+from hashi.api import Handoff
+from hashi.cli import initialize
+from hashi.node_cli import add_plugin_commands, run_plugin_command
+from hashi.node_service import NodeService
+from hashi.plugin_protocol import (builtin_manifests, to_rpc,
                                               validate_manifest)
-from workspace_bridge.runtime import RuntimeRejected, RuntimeUnavailable
-from workspace_bridge.security import BridgeError, digest
-from workspace_bridge.service import Service
+from hashi.runtime import RuntimeRejected, RuntimeUnavailable
+from hashi.security import BridgeError, digest
+from hashi.service import Service
 
 PLUGINS = Path(__file__).parent / "plugins"
 
@@ -56,8 +56,8 @@ def client(node_service, adapter_id, timeout=10):
 def test_builtin_manifests_cover_the_four_agents():
     manifests = builtin_manifests()
     assert set(manifests) == {"claude", "codex", "opencode", "pi"}
-    assert manifests["claude"]["command"][1:] == ["-m", "workspace_bridge.plugin_host", "claude"]
-    assert manifests["pi"]["command"] == ["workspace-bridge-pi-adapter", "--stdio"]
+    assert manifests["claude"]["command"][1:] == ["-m", "hashi.plugin_host", "claude"]
+    assert manifests["pi"]["command"] == ["hashi-pi-adapter", "--stdio"]
 
 
 @pytest.mark.parametrize("change, message", [
@@ -157,7 +157,7 @@ def test_read_only_probe_leaves_owned_plugin_and_active_run_untouched(node):
 
 def test_stray_stdout_and_node_environment_never_reach_the_protocol(node, monkeypatch):
     service, projects = node
-    monkeypatch.setenv("WB_NODE_SECRET", "do-not-pass")
+    monkeypatch.setenv("HASHI_NODE_SECRET", "do-not-pass")
     plugin = client(service, add(service, projects)["id"])
     assert plugin.descriptor().runtime_id == "pi"
     state = Path(service.state / "plugins" / plugin.adapter_id / "state")
@@ -166,13 +166,13 @@ def test_stray_stdout_and_node_environment_never_reach_the_protocol(node, monkey
     pid = int((state / "started").read_text())
     environ = Path(f"/proc/{pid}/environ")
     if environ.exists():
-        assert b"WB_NODE_SECRET" not in environ.read_bytes()
+        assert b"HASHI_NODE_SECRET" not in environ.read_bytes()
 
 
 def test_a_bare_plugin_command_resolves_through_the_login_path(tmp_path, monkeypatch):
     # A launchd service has only /usr/bin:/bin; the Pi plugin command lives
     # in Homebrew's or npm's bin folder, which only the login shell adds.
-    from workspace_bridge import plugin_supervisor
+    from hashi import plugin_supervisor
     bin_dir = tmp_path / "login-bin"
     bin_dir.mkdir()
     launcher = bin_dir / "fake-plugin"
@@ -306,7 +306,7 @@ def test_a_real_codex_adapter_runs_as_a_plugin_through_the_bridge(tmp_path, payl
 async def test_manager_api_lists_plugins_and_creates_a_plugin_adapter(env):
     import httpx
     from admin_helpers import admin_cookie
-    from workspace_bridge.api import make_admin
+    from hashi.api import make_admin
     service = env["service"]
     app = make_admin(service)
     cookie = admin_cookie(app)

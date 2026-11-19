@@ -26,7 +26,7 @@ def isolate_configuration(tmp_path, monkeypatch):
     # Never read a real user config or inherit real private binding settings.
     monkeypatch.setattr(packager, "DEFAULT_ENV_FILE", tmp_path / ".env.skill-plugin")
     for key in list(packager.os.environ):
-        if key.startswith("WB_SKILL_PLUGIN_"):
+        if key.startswith("HASHI_SKILL_PLUGIN_"):
             monkeypatch.delenv(key)
 
 
@@ -205,7 +205,7 @@ def test_bootstrap_records_exact_identity_and_template_alias(initialized):
     assert state["app_id"] == APP_ID
     assert state["package_name"] == state["manifest"]["name"] == PACKAGE_NAME
     assert state["package_version"] == state["manifest"]["version"] == "1.4.9"
-    assert state["app_alias"] == "workspace-bridge"
+    assert state["app_alias"] == "hashi"
     assert state["skill_baseline_origin"] == "unpackaged"
     assert state["last_skill_sha256"] is state["last_artifact"] is None
     assert not list(directory.rglob("*.zip"))
@@ -229,7 +229,7 @@ def test_first_build_has_portable_layout_binding_and_synchronized_identity(initi
         assert root["extensions"]["com.openai"]["apps"] == legacy["apps"] == "./.app.json"
         assert root["extensions"]["com.openai"]["interface"] == legacy["interface"]
         assert legacy["skills"] == "./skills/" and "skills" not in root
-        assert json.loads(archive.read(".app.json")) == {"apps": {"workspace-bridge": {"id": APP_ID}}}
+        assert json.loads(archive.read(".app.json")) == {"apps": {"hashi": {"id": APP_ID}}}
         assert archive.read("skills/my-workflow/SKILL.md") == source.read_bytes()
     state = json.loads(path.read_bytes())
     assert state["last_skill_sha256"] == sha256(source.read_bytes()).hexdigest()
@@ -652,8 +652,8 @@ def test_env_only_app_id_normal_build_uses_local_state(initialized, monkeypatch,
     if source == "file":
         write_env(packager.DEFAULT_ENV_FILE, app_id=TECHNICAL_ID, state=directory)
     else:
-        monkeypatch.setenv("WB_SKILL_PLUGIN_APP_ID", TECHNICAL_ID)
-        monkeypatch.setenv("WB_SKILL_PLUGIN_STATE", str(directory))
+        monkeypatch.setenv("HASHI_SKILL_PLUGIN_APP_ID", TECHNICAL_ID)
+        monkeypatch.setenv("HASHI_SKILL_PLUGIN_STATE", str(directory))
     assert packager.main([]) == 0
     assert json.loads(path.read_bytes())["package_version"] == "1.4.10"
     before = path.read_bytes()
@@ -735,11 +735,11 @@ def test_cli_overrides_process_and_file_in_real_bootstrap(tmp_path, monkeypatch)
     source.write_bytes(skill_bytes())
     write_env(packager.DEFAULT_ENV_FILE, app_id="plugin_asdk_app_file123", package_name="File_Plugin",
               package_version="1.0.0", skill_already_packaged="true", state=tmp_path / "file-state")
-    monkeypatch.setenv("WB_SKILL_PLUGIN_APP_ID", "plugin_asdk_app_process123")
-    monkeypatch.setenv("WB_SKILL_PLUGIN_PACKAGE_NAME", "Process_Plugin")
-    monkeypatch.setenv("WB_SKILL_PLUGIN_PACKAGE_VERSION", "2.0.0")
-    monkeypatch.setenv("WB_SKILL_PLUGIN_STATE", str(tmp_path / "process-state"))
-    monkeypatch.setenv("WB_SKILL_PLUGIN_ALREADY_PACKAGED", "true")
+    monkeypatch.setenv("HASHI_SKILL_PLUGIN_APP_ID", "plugin_asdk_app_process123")
+    monkeypatch.setenv("HASHI_SKILL_PLUGIN_PACKAGE_NAME", "Process_Plugin")
+    monkeypatch.setenv("HASHI_SKILL_PLUGIN_PACKAGE_VERSION", "2.0.0")
+    monkeypatch.setenv("HASHI_SKILL_PLUGIN_STATE", str(tmp_path / "process-state"))
+    monkeypatch.setenv("HASHI_SKILL_PLUGIN_ALREADY_PACKAGED", "true")
     assert packager.main(["--init", "--app-id", TECHNICAL_ID, "--package-name", "CLI_Plugin",
                           "--package-version", "3.0.0", "--state", str(directory), "--skill", str(source),
                           "--no-skill-already-packaged"]) == 0
@@ -756,7 +756,7 @@ def test_process_and_cli_paths_keep_cwd_semantics(tmp_path, monkeypatch):
     working.mkdir()
     monkeypatch.chdir(working)
     config = write_env(tmp_path / "config-dir/config.env", state="file-state", output="file.zip")
-    monkeypatch.setenv("WB_SKILL_PLUGIN_STATE", "process-state")
+    monkeypatch.setenv("HASHI_SKILL_PLUGIN_STATE", "process-state")
     args = argparse.Namespace(env_file=config, init=False, **{key: None for key in packager.ENV_OPTIONS})
     args.output = Path("cli.zip")
     resolved = packager.resolve_configuration(args)
@@ -782,7 +782,7 @@ def test_env_output_path_preserves_existing_symlink_rejection(initialized, tmp_p
 ])
 def test_env_boolean_values(tmp_path, raw, expected):
     config = write_env(tmp_path / "settings.env", skill_already_packaged=raw)
-    assert packager.read_env_file(config)["WB_SKILL_PLUGIN_ALREADY_PACKAGED"] is expected
+    assert packager.read_env_file(config)["HASHI_SKILL_PLUGIN_ALREADY_PACKAGED"] is expected
 
 
 @pytest.mark.parametrize("raw", ["", "maybe", "2", "null", TECHNICAL_ID])
@@ -791,8 +791,8 @@ def test_invalid_booleans_are_rejected_without_echoing_input(tmp_path, monkeypat
     if source == "file":
         write_env(packager.DEFAULT_ENV_FILE, app_id=TECHNICAL_ID, skill_already_packaged=raw)
     else:
-        monkeypatch.setenv("WB_SKILL_PLUGIN_APP_ID", TECHNICAL_ID)
-        monkeypatch.setenv("WB_SKILL_PLUGIN_ALREADY_PACKAGED", raw)
+        monkeypatch.setenv("HASHI_SKILL_PLUGIN_APP_ID", TECHNICAL_ID)
+        monkeypatch.setenv("HASHI_SKILL_PLUGIN_ALREADY_PACKAGED", raw)
     assert packager.main([]) == 2
     captured = capsys.readouterr()
     assert "must be true/false" in captured.err and APP_ID not in captured.err + captured.out
@@ -801,26 +801,26 @@ def test_invalid_booleans_are_rejected_without_echoing_input(tmp_path, monkeypat
 def test_env_parser_supports_literals_export_comments_and_ignored_keys(tmp_path):
     path = tmp_path / "settings.env"
     path.write_text("\ufeff# comments and blanks\n\n"
-                    f"export WB_SKILL_PLUGIN_APP_ID='{TECHNICAL_ID}' # inline comment\n"
-                    'WB_SKILL_PLUGIN_PACKAGE_NAME="My_Plugin-2"\n'
-                    "WB_SKILL_PLUGIN_PACKAGE_VERSION=1.0.0 # comment\n"
-                    'WB_SKILL_PLUGIN_STATE="folder with spaces"\n'
-                    "WB_SKILL_PLUGIN_APP_ALIAS=literal#hash\n"
+                    f"export HASHI_SKILL_PLUGIN_APP_ID='{TECHNICAL_ID}' # inline comment\n"
+                    'HASHI_SKILL_PLUGIN_PACKAGE_NAME="My_Plugin-2"\n'
+                    "HASHI_SKILL_PLUGIN_PACKAGE_VERSION=1.0.0 # comment\n"
+                    'HASHI_SKILL_PLUGIN_STATE="folder with spaces"\n'
+                    "HASHI_SKILL_PLUGIN_APP_ALIAS=literal#hash\n"
                     "IGNORED=value\nIGNORED=another\n")
     parsed = packager.read_env_file(path)
-    assert parsed["WB_SKILL_PLUGIN_APP_ID"] == TECHNICAL_ID
-    assert parsed["WB_SKILL_PLUGIN_PACKAGE_NAME"] == "My_Plugin-2"
-    assert parsed["WB_SKILL_PLUGIN_PACKAGE_VERSION"] == "1.0.0"
-    assert parsed["WB_SKILL_PLUGIN_STATE"] == tmp_path / "folder with spaces"
-    assert parsed["WB_SKILL_PLUGIN_APP_ALIAS"] == "literal#hash" and "IGNORED" not in parsed
+    assert parsed["HASHI_SKILL_PLUGIN_APP_ID"] == TECHNICAL_ID
+    assert parsed["HASHI_SKILL_PLUGIN_PACKAGE_NAME"] == "My_Plugin-2"
+    assert parsed["HASHI_SKILL_PLUGIN_PACKAGE_VERSION"] == "1.0.0"
+    assert parsed["HASHI_SKILL_PLUGIN_STATE"] == tmp_path / "folder with spaces"
+    assert parsed["HASHI_SKILL_PLUGIN_APP_ALIAS"] == "literal#hash" and "IGNORED" not in parsed
 
 
 @pytest.mark.parametrize("content", [
     b"malformed line", b"export bare", b"1INVALID=value", b"=empty-key",
-    b"WB_SKILL_PLUGIN_APP_ID='unterminated", b'WB_SKILL_PLUGIN_APP_ID="value" trailing',
-    b"WB_SKILL_PLUGIN_APP_ID=value\nWB_SKILL_PLUGIN_APP_ID=another\n",
-    b"WB_SKILL_PLUGIN_ALREADY_PACKAGED=true\nWB_SKILL_PLUGIN_ALREADY_PACKAGED=false\n",
-    b"WB_SKILL_PLUGIN_APP_ID=valid\0hidden", b"# ignored comment\0bad", b"\xff",
+    b"HASHI_SKILL_PLUGIN_APP_ID='unterminated", b'HASHI_SKILL_PLUGIN_APP_ID="value" trailing',
+    b"HASHI_SKILL_PLUGIN_APP_ID=value\nHASHI_SKILL_PLUGIN_APP_ID=another\n",
+    b"HASHI_SKILL_PLUGIN_ALREADY_PACKAGED=true\nHASHI_SKILL_PLUGIN_ALREADY_PACKAGED=false\n",
+    b"HASHI_SKILL_PLUGIN_APP_ID=valid\0hidden", b"# ignored comment\0bad", b"\xff",
 ])
 def test_malformed_duplicate_and_nul_env_files_fail_closed(tmp_path, content):
     path = tmp_path / "invalid.env"
@@ -831,14 +831,14 @@ def test_malformed_duplicate_and_nul_env_files_fail_closed(tmp_path, content):
 
 @pytest.mark.parametrize("source", ["file", "process"])
 def test_unknown_prefixed_keys_are_rejected_without_echoing_values(tmp_path, monkeypatch, capsys, source):
-    key = "WB_SKILL_PLUGIN_APP_IID"
+    key = "HASHI_SKILL_PLUGIN_APP_IID"
     if source == "file":
         packager.DEFAULT_ENV_FILE.write_text(f"{key}={TECHNICAL_ID}\n")
     else:
         monkeypatch.setenv(key, TECHNICAL_ID)
     assert packager.main([]) == 2
     captured = capsys.readouterr()
-    assert "unknown WB_SKILL_PLUGIN_" in captured.err and APP_ID not in captured.err + captured.out
+    assert "unknown HASHI_SKILL_PLUGIN_" in captured.err and APP_ID not in captured.err + captured.out
 
 
 @pytest.mark.parametrize("expression", ["$HOME", "${HOME}", "$(touch SENTINEL)", "`touch SENTINEL`",
@@ -852,8 +852,8 @@ def test_env_shell_syntax_is_rejected_and_never_executed(tmp_path, monkeypatch, 
 
 def test_quoted_backslashes_are_literal_and_not_unescaped(tmp_path):
     path = tmp_path / "literal.env"
-    path.write_text("WB_SKILL_PLUGIN_STATE='folder\\nname'\n")
-    assert packager.read_env_file(path)["WB_SKILL_PLUGIN_STATE"] == tmp_path / r"folder\nname"
+    path.write_text("HASHI_SKILL_PLUGIN_STATE='folder\\nname'\n")
+    assert packager.read_env_file(path)["HASHI_SKILL_PLUGIN_STATE"] == tmp_path / r"folder\nname"
 
 
 def test_missing_explicit_env_file_fails_even_with_cli_app_id(tmp_path, capsys):
@@ -864,7 +864,7 @@ def test_missing_explicit_env_file_fails_even_with_cli_app_id(tmp_path, capsys):
 
 def test_missing_default_file_and_docker_env_never_supply_configuration(tmp_path, capsys):
     assert not packager.DEFAULT_ENV_FILE.exists()
-    (packager.DEFAULT_ENV_FILE.parent / ".env").write_text(f"WB_SKILL_PLUGIN_APP_ID={TECHNICAL_ID}\n")
+    (packager.DEFAULT_ENV_FILE.parent / ".env").write_text(f"HASHI_SKILL_PLUGIN_APP_ID={TECHNICAL_ID}\n")
     assert packager.main([]) == 2
     captured = capsys.readouterr()
     assert "app ID is required" in captured.err and APP_ID not in captured.err + captured.out
@@ -877,15 +877,15 @@ def test_env_settings_never_choose_initialization_implicitly(tmp_path, capsys):
     assert packager.main([]) == 2
     assert "packager state is missing" in capsys.readouterr().err and not directory.exists()
     with packager.DEFAULT_ENV_FILE.open("a") as file:
-        file.write("WB_SKILL_PLUGIN_INIT=true\n")
+        file.write("HASHI_SKILL_PLUGIN_INIT=true\n")
     assert packager.main([]) == 2
-    assert "unknown WB_SKILL_PLUGIN_" in capsys.readouterr().err and not directory.exists()
+    assert "unknown HASHI_SKILL_PLUGIN_" in capsys.readouterr().err and not directory.exists()
 
 
 def test_example_config_is_synthetic_and_private_config_is_ignored():
     path = REPO / "packaging/chatgpt/skill-plugin.env.example"
     parsed = packager.read_env_file(path)
-    assert parsed["WB_SKILL_PLUGIN_APP_ID"] == TECHNICAL_ID
-    assert parsed["WB_SKILL_PLUGIN_ALREADY_PACKAGED"] is True
+    assert parsed["HASHI_SKILL_PLUGIN_APP_ID"] == TECHNICAL_ID
+    assert parsed["HASHI_SKILL_PLUGIN_ALREADY_PACKAGED"] is True
     assert subprocess.run(["git", "check-ignore", "--no-index", "--quiet", ".env.skill-plugin"], cwd=REPO).returncode == 0
     assert subprocess.run(["git", "check-ignore", "--no-index", "--quiet", str(path)], cwd=REPO).returncode == 1

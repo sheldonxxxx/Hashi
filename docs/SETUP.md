@@ -1,7 +1,6 @@
 # Setup
 
-Single canonical human installation and configuration guide for Workspace
-Bridge. Follow it top to bottom. For daily operation see
+Single canonical human installation and configuration guide for Hashi. Follow it top to bottom. For daily operation see
 [Operations](OPERATIONS.md); for Pi/Codex/Claude Code specifics see
 [Runtimes](RUNTIMES.md).
 
@@ -31,39 +30,39 @@ outside mapped projects.
 ## 1. Prerequisites
 
 - macOS or Linux (native Windows is unsupported; use WSL2).
-- Python 3.11+ and `uv` are always needed for Workspace Bridge itself.
+- Python 3.11+ and `uv` are always needed for Hashi itself.
   Node 22.19+ with npm is needed only for the Pi adapter (and for
   contributor/web work), not for a Codex-only deployment.
 - Decide: a projects parent that already exists (for example
   `$HOME/Projects`), a Bridge state directory, a Node state directory, and
   distinct host ports in 1024–65535 for MCP and Manager.
 - Default paths used below (generic examples; substitute your own):
-  Bridge `$HOME/.local/state/workspace-bridge`, Node
-  `$HOME/.local/state/workspace-bridge-node`. Agent plugins keep their state
+  Bridge `$HOME/.local/state/hashi`, Node
+  `$HOME/.local/state/hashi-node`. Agent plugins keep their state
   inside the Node state folder.
 
 ## 2. Install packages
 
-Install the Python product persistently (provides `workspace-bridge`, the
+Install the Python product persistently (provides `hashi`, the
 nested `node` surface, and the Claude Code, Codex and OpenCode agent
 plugins):
 
 ```sh
-uv tool install workspace-bridge
-workspace-bridge --version
+uv tool install hashi-app
+hashi --version
 ```
 
 Install the Pi plugin package on each Node host that will run Pi:
 
 ```sh
-npm install -g workspace-bridge-pi-host-adapter
+npm install -g hashi-pi-host-adapter
 ```
 
 The global `--state` option selects a state directory and comes before the
 subcommand:
 
 ```sh
-workspace-bridge --state "$HOME/.local/state/workspace-bridge" doctor --offline
+hashi --state "$HOME/.local/state/hashi" doctor --offline
 ```
 
 ## 3. Credentials you will handle
@@ -75,9 +74,9 @@ never paste tokens or pairing strings into chat, project files, or handoffs.
 
 | Credential | Created / stored | How to use it locally |
 |---|---|---|
-| Manager admin account | Username `admin`; temporary password `admin`; salted scrypt hash in private `admin-account.json` | Sign in locally and change the password on first login; recover with `workspace-bridge reset-admin-password` |
-| Pairing string | `workspace-bridge pairing create --name <node>` on the Bridge host, or `POST /api/nodes/pairings`; single use, valid 10 minutes, shown once | Redeem on the Node host with `workspace-bridge node --state <node-state> pair 'wbpair1:...'`; the Node then keeps its own key |
-| Shared MCP gateway token | Created or rotated by the Manager or `POST /api/bridge {"operation":"rotate_token"}` while serving, or by `workspace-bridge rotate-bridge-token` while stopped; stored in Bridge state | Copy the displayed value locally into the tunnel environment file (mode `0600`) as the `X-Bridge-Token` header; never tunnel the Manager |
+| Manager admin account | Username `admin`; temporary password `admin`; salted scrypt hash in private `admin-account.json` | Sign in locally and change the password on first login; recover with `hashi reset-admin-password` |
+| Pairing string | `hashi pairing create --name <node>` on the Bridge host, or `POST /api/nodes/pairings`; single use, valid 10 minutes, shown once | Redeem on the Node host with `hashi node --state <node-state> pair 'wbpair1:...'`; the Node then keeps its own key |
+| Shared MCP gateway token | Created or rotated by the Manager or `POST /api/bridge {"operation":"rotate_token"}` while serving, or by `hashi rotate-bridge-token` while stopped; stored in Bridge state | Copy the displayed value locally into the tunnel environment file (mode `0600`) as the `X-Bridge-Token` header; never tunnel the Manager |
 
 Normal list and status APIs report only whether a token exists, never its
 value. Rotation of the shared gateway credential also enables the gateway;
@@ -89,9 +88,9 @@ The Bridge runs this machine's Node in its own process (the embedded Node),
 so a single host needs no separate Node service:
 
 ```sh
-workspace-bridge init
-workspace-bridge local-node enable --allow-root "$HOME/Projects"
-workspace-bridge serve
+hashi init
+hashi local-node enable --allow-root "$HOME/Projects"
+hashi serve
 ```
 
 `--allow-root` may repeat; it is the ceiling of folders the Node may expose.
@@ -99,12 +98,12 @@ Open `http://127.0.0.1:8766/`, sign in as `admin` with temporary password
 `admin`, change the password, and continue with section 6. The embedded Node
 appears in the Manager with transport `local`. Keep this terminal attached;
 stopping it stops the Bridge. To run the Bridge persistently instead, stop it
-and install it as a service, with any `WB_*` settings in `bridge.env` in its
+and install it as a service, with any `HASHI_*` settings in `bridge.env` in its
 state folder (see [Operations](OPERATIONS.md#service-persistence)):
 
 ```sh
-workspace-bridge service install
-workspace-bridge service status
+hashi service install
+hashi service status
 ```
 
 This installs a user service: a LaunchAgent on macOS, a systemd user unit on
@@ -116,24 +115,24 @@ runs as the account that owns the state folder.
 
 A Node on another machine dials the Bridge; it opens no inbound port. The
 Bridge's Node gateway (TLS, default port 8767) binds `127.0.0.1` unless
-`WB_NODE_GATEWAY_HOST` names another address, normally the Bridge's VPN (for
-example Tailscale) IP. Set `WB_NODE_GATEWAY_URL` when Nodes should use a
+`HASHI_NODE_GATEWAY_HOST` names another address, normally the Bridge's VPN (for
+example Tailscale) IP. Set `HASHI_NODE_GATEWAY_URL` when Nodes should use a
 hostname, such as `wss://bridge.example.ts.net:8767/v1/node-gateway`. Then
 issue a single-use pairing string on the Bridge host and redeem it on the
 Node:
 
 ```sh
 # Bridge host: valid for 10 minutes, shown once
-workspace-bridge pairing create --name laptop
+hashi pairing create --name laptop
 ```
 
 ```sh
 # Node host
-NODE_STATE="$HOME/.local/state/workspace-bridge-node"
-workspace-bridge node --state "$NODE_STATE" init --allow-root "$HOME/Projects"
-workspace-bridge node --state "$NODE_STATE" pair 'wbpair1:...'
-workspace-bridge node --state "$NODE_STATE" service install
-workspace-bridge node --state "$NODE_STATE" service status
+NODE_STATE="$HOME/.local/state/hashi-node"
+hashi node --state "$NODE_STATE" init --allow-root "$HOME/Projects"
+hashi node --state "$NODE_STATE" pair 'wbpair1:...'
+hashi node --state "$NODE_STATE" service install
+hashi node --state "$NODE_STATE" service status
 ```
 
 The pairing string carries the gateway certificate fingerprint, so the first
@@ -155,22 +154,22 @@ own CLI and sign in to it as usual on that host, then add the adapter on the
 Node that owns the projects:
 
 ```sh
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" plugin list
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" adapter add claude --name "Claude Code"
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" adapter add codex --name "Codex"
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" adapter test <adapter-id>
+hashi node --state "$HOME/.local/state/hashi-node" plugin list
+hashi node --state "$HOME/.local/state/hashi-node" adapter add claude --name "Claude Code"
+hashi node --state "$HOME/.local/state/hashi-node" adapter add codex --name "Codex"
+hashi node --state "$HOME/.local/state/hashi-node" adapter test <adapter-id>
 ```
 
-For the Bridge machine's embedded Node use `workspace-bridge local-node
-adapter add ...` instead of `workspace-bridge node ... adapter add`. `--projects-root` defaults to the Node's only
+For the Bridge machine's embedded Node use `hashi local-node
+adapter add ...` instead of `hashi node ... adapter add`. `--projects-root` defaults to the Node's only
 allowed root and must stay inside the allowed roots. Plugin settings are
 passed with `--set`, for example `--set binary=/opt/homebrew/bin/claude` or
 `--set setting_sources=user`; `plugin list` shows each plugin's settings.
 `adapter set <adapter-id> --set KEY=VALUE` changes them later, keeping the
 adapter ID and its routes (`KEY=` clears one); the plugin restarts, and runs
 active on it are interrupted.
-Pi needs the npm package `workspace-bridge-pi-host-adapter` installed so its
-`workspace-bridge-pi-adapter` command is on the Node's `PATH`. The Manager
+Pi needs the npm package `hashi-pi-host-adapter` installed so its
+`hashi-pi-adapter` command is on the Node's `PATH`. The Manager
 can create the same adapters through `POST /api/adapters` with a `plugin`
 field. The Node starts a plugin on first use, restarts it with backoff if it
 exits, and writes its stderr to `plugins/<adapter-id>/plugin.log` in the
@@ -207,7 +206,7 @@ are not accepted by the Manager. Order matters:
    lets ChatGPT edit permitted files and run checks; handoffs and runs work
    in both).
 3. **Adapter instances:** on the owning Node host, add each agent as a plugin
-   with `workspace-bridge node adapter add <plugin> --name <name>` (section
+   with `hashi node adapter add <plugin> --name <name>` (section
    6), or through `POST /api/adapters` with `node_id`, `name` and `plugin`.
 4. **Model policy** per adapter: list the live catalog first, then save the
    enabled selectors plus default. Every selector must currently exist or the
@@ -249,9 +248,9 @@ mcp:
     - channel: main
       url: http://127.0.0.1:8875/mcp
   extra_headers:
-    X-Bridge-Token: env:WORKSPACE_BRIDGE_TOKEN
+    X-Bridge-Token: env:HASHI_TOKEN
   discovery_extra_headers:
-    X-Bridge-Token: env:WORKSPACE_BRIDGE_TOKEN
+    X-Bridge-Token: env:HASHI_TOKEN
 ```
 
 4. Run the tunnel with the official client (the included helper only prompts
@@ -270,9 +269,9 @@ mcp:
 ## 9. Verify
 
 ```sh
-workspace-bridge doctor
-workspace-bridge doctor --json
-workspace-bridge doctor --offline
+hashi doctor
+hashi doctor --json
+hashi doctor --offline
 ```
 
 Expected: overall `pass`, and every intended workspace/adapter route listed
@@ -298,16 +297,16 @@ The Bridge, the Node and the Claude Code, Codex and OpenCode plugins share one
 Python package; the Pi plugin is its own npm package:
 
 ```sh
-uv tool upgrade workspace-bridge
-npm install -g workspace-bridge-pi-host-adapter
-workspace-bridge --version
-workspace-bridge service restart
+uv tool upgrade hashi
+npm install -g hashi-pi-host-adapter
+hashi --version
+hashi service restart
 ```
 
 On a host with a paired Node, restart it too:
 
 ```sh
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" service restart
+hashi node --state "$HOME/.local/state/hashi-node" service restart
 ```
 
 Restarting a Node restarts its plugins. These steps do not update the
@@ -321,11 +320,11 @@ Stop and remove services before deleting state. Service removal preserves
 state, tokens, bindings, and logs; deleting state is the destructive step.
 
 ```sh
-workspace-bridge service uninstall
+hashi service uninstall
 ```
 
 ```sh
-workspace-bridge node --state "$HOME/.local/state/workspace-bridge-node" service uninstall
+hashi node --state "$HOME/.local/state/hashi-node" service uninstall
 ```
 
 Then, only if you intend to lose local data, remove the state directories
@@ -340,9 +339,9 @@ permissions and SQLite files; Bridge state holds the handoffs.
   did not write (one without its marker line): remove that definition by
   hand first.
 - A paired Node stays disconnected: check that the Node host reaches the
-  gateway address in `WB_NODE_GATEWAY_URL` (or the gateway host and port),
+  gateway address in `HASHI_NODE_GATEWAY_URL` (or the gateway host and port),
   and read `logs/node.log` in the Node state folder.
-- An adapter fails its test: run `workspace-bridge node adapter test
+- An adapter fails its test: run `hashi node adapter test
   <adapter-id>` on the Node host and read the `plugin.log` it names.
 - Model saves fail: read the live catalog first; stale selectors are
   rejected at save time.

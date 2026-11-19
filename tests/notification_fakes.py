@@ -1,6 +1,6 @@
 """Notification-channel fakes for outbox tests."""
 
-from workspace_bridge.notifications import NotificationEvent, NotificationResult
+from hashi.notifications import NotificationEvent, NotificationResult
 
 
 class RecordingChannel:

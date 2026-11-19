@@ -7,10 +7,10 @@ import httpx
 import pytest
 
 from admin_helpers import admin_cookie
-from workspace_bridge.api import make_admin
-from workspace_bridge.node_service import NodeService
-from workspace_bridge.runtime import RuntimeUnavailable
-from workspace_bridge.security import BridgeError, digest
+from hashi.api import make_admin
+from hashi.node_service import NodeService
+from hashi.runtime import RuntimeUnavailable
+from hashi.security import BridgeError, digest
 
 from conftest import create_test_adapter, register_test_node, start_test_node, patch_node_runtime
 
@@ -158,8 +158,8 @@ def test_status_carries_no_update_or_installer_surface(tmp_path):
 
 
 def test_runtime_call_refuses_unknown_operations(tmp_path):
-    from workspace_bridge.node_service import NodeService
-    from workspace_bridge.security import BridgeError, digest
+    from hashi.node_service import NodeService
+    from hashi.security import BridgeError, digest
     parent = tmp_path / "projects"
     parent.mkdir()
     config = {"allowed_roots": [str(parent)],

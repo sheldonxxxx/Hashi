@@ -34,13 +34,13 @@ test("log level parsing supports four levels with INFO default", () => {
   assert.deepEqual(ALLOWED_LEVELS, ["DEBUG", "INFO", "WARNING", "ERROR"]);
   assert.equal(DEFAULT_LOG_LEVEL, "INFO");
   assert.equal(logLevelFromEnv({}), "INFO");
-  assert.equal(logLevelFromEnv({ WB_LOG_LEVEL: "" }), "INFO");
-  assert.equal(logLevelFromEnv({ WB_LOG_LEVEL: "   " }), "INFO");
-  assert.equal(logLevelFromEnv({ WB_LOG_LEVEL: "debug" }), "DEBUG");
+  assert.equal(logLevelFromEnv({ HASHI_LOG_LEVEL: "" }), "INFO");
+  assert.equal(logLevelFromEnv({ HASHI_LOG_LEVEL: "   " }), "INFO");
+  assert.equal(logLevelFromEnv({ HASHI_LOG_LEVEL: "debug" }), "DEBUG");
   assert.equal(parseLogLevel("WARNING"), "WARNING");
   assert.equal(parseConfigLevel("error"), "ERROR");
-  assert.throws(() => parseLogLevel("VERBOSE"), /WB_LOG_LEVEL must be one of/);
-  assert.throws(() => parseConfigLevel("nope"), /WB_LOG_LEVEL must be one of/);
+  assert.throws(() => parseLogLevel("VERBOSE"), /HASHI_LOG_LEVEL must be one of/);
+  assert.throws(() => parseConfigLevel("nope"), /HASHI_LOG_LEVEL must be one of/);
   // Invalid messages never echo the raw value.
   try {
     parseLogLevel("sk-secret-VALUE");
@@ -155,18 +155,18 @@ test("routine SDK trace stages are DEBUG, anomalies are WARNING", async () => {
 
 test("config stores log level and main filters through it", () => {
   assert.equal(loadConfig({}, "/home/tester").logLevel, "INFO");
-  assert.equal(loadConfig({ WB_LOG_LEVEL: "debug" }, "/home/tester").logLevel, "DEBUG");
-  assert.throws(() => loadConfig({ WB_LOG_LEVEL: "VERBOSE" }, "/home/tester"),
-    /WB_LOG_LEVEL must be one of/);
-  const built = buildMain({ WB_PI_PROJECTS_DIR: "", WB_LOG_LEVEL: "WARNING" });
+  assert.equal(loadConfig({ HASHI_LOG_LEVEL: "debug" }, "/home/tester").logLevel, "DEBUG");
+  assert.throws(() => loadConfig({ HASHI_LOG_LEVEL: "VERBOSE" }, "/home/tester"),
+    /HASHI_LOG_LEVEL must be one of/);
+  const built = buildMain({ HASHI_PI_PROJECTS_DIR: "", HASHI_LOG_LEVEL: "WARNING" });
   assert.equal(built.config.logLevel, "WARNING");
   assert.equal(built.log.level, "WARNING");
 });
 
-test("invalid adapter WB_LOG_LEVEL fails startup safely", () => {
-  assert.throws(() => buildMain({ WB_LOG_LEVEL: "sk-secret-VALUE" }), /WB_LOG_LEVEL must be one of/);
+test("invalid adapter HASHI_LOG_LEVEL fails startup safely", () => {
+  assert.throws(() => buildMain({ HASHI_LOG_LEVEL: "sk-secret-VALUE" }), /HASHI_LOG_LEVEL must be one of/);
   try {
-    buildMain({ WB_LOG_LEVEL: "sk-secret-VALUE" });
+    buildMain({ HASHI_LOG_LEVEL: "sk-secret-VALUE" });
     assert.fail("expected throw");
   } catch (error) {
     assert.ok(!String(error.message).includes("sk-secret-VALUE"));
