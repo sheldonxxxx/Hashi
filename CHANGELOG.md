@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.1.1 — 2026-11-19
+
+- The Manager sidebar brand reads Hashi instead of the old workspace-bridge
+  wordmark.
+
 ## 1.1.0 — 2026-11-19
 
 - **Breaking:** the project is renamed from Workspace Bridge to Hashi. The

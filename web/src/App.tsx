@@ -3777,9 +3777,7 @@ function Brand() {
         <SquareTerminal size={20} strokeWidth={2.2} />
       </span>
       <span>
-        <strong>
-          workspace<span className="brand-dash">-</span>bridge
-        </strong>
+        <strong>Hashi</strong>
         <small>local agent operations</small>
       </span>
     </div>
