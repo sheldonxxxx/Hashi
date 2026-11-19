@@ -58,7 +58,7 @@ def test_ci_baseline_current_and_least_privilege():
     # Matrix covers Linux x64/arm64 + macOS arm64.
     assert "ubuntu-24.04" in text
     assert "ubuntu-24.04-arm" in text
-    assert "macos-14" in text
+    assert "macos-15" in text
     assert '"3.11"' in text or "'3.11'" in text or "3.11" in text
     assert '"3.13"' in text or "'3.13'" in text or "3.13" in text
     # Pi uses locked production deps + tests on all three OS.
@@ -69,7 +69,7 @@ def test_ci_baseline_current_and_least_privilege():
     pi_text = yaml.safe_dump(jobs["pi"])
     assert "ubuntu-24.04" in pi_text
     assert "ubuntu-24.04-arm" in pi_text
-    assert "macos-14" in pi_text
+    assert "macos-15" in pi_text
     assert "--omit=dev" in text
     assert "docker" not in text.lower()
 
