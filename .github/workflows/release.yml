@@ -9,6 +9,11 @@ on:
         description: 'Existing GitHub Release tag to rebuild/republish (e.g. v0.1.1). Must already exist and not be a draft. No tags or releases are created, moved, or deleted.'
         required: true
         type: string
+      skip_browser:
+        description: 'Skip the Manager browser job when registry mirrors are unavailable'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -74,6 +79,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       ref: ${{ github.event.release.tag_name || inputs.tag }}
+      skip_browser: ${{ inputs.skip_browser || false }}
 
   npm-pack:
     name: npm pack / Linux x64

@@ -8,6 +8,11 @@ on:
         description: Git ref to validate when called from the release workflow
         required: false
         type: string
+      skip_browser:
+        description: Skip the Manager browser job during a registry recovery run
+        required: false
+        type: boolean
+        default: false
   push:
     branches: [main]
     tags: ["v*"]
@@ -73,6 +78,7 @@ jobs:
 
   manager-browser:
     name: Manager browser / Ubuntu x64
+    if: ${{ !inputs.skip_browser }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
