@@ -1,6 +1,6 @@
 # Pi plugin
 
-The Pi agent plugin for [Hashi](https://github.com/sheldonxxxx/hashi):
+The Pi agent plugin for [Hashi](https://github.com/sheldonxxxx/Hashi):
 plan in ChatGPT, build with your local agents. Install it on any host where
 you want ChatGPT to start bounded Pi runs through Hashi.
 
@@ -14,8 +14,8 @@ Agent Protocol v2 (JSON-RPC on stdin and stdout). It has no port and no
 token. Run without `--stdio`, it prints usage and exits.
 
 For runtime behavior, profiles, and troubleshooting see
-[Runtimes](https://github.com/sheldonxxxx/hashi/blob/main/docs/RUNTIMES.md). For repo checks see
-[Contributing](https://github.com/sheldonxxxx/hashi/blob/main/CONTRIBUTING.md).
+[Runtimes](https://github.com/sheldonxxxx/Hashi/blob/main/docs/RUNTIMES.md). For repo checks see
+[Contributing](https://github.com/sheldonxxxx/Hashi/blob/main/CONTRIBUTING.md).
 
 ## Topology
 

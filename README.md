@@ -1,6 +1,6 @@
 # Hashi 橋
 
-![Hashi: plan in ChatGPT, build with your local agents](https://raw.githubusercontent.com/sheldonxxxx/hashi/main/docs/assets/hashi-banner.png)
+![Hashi: plan in ChatGPT, build with your local agents](https://raw.githubusercontent.com/sheldonxxxx/Hashi/main/docs/assets/hashi-banner.png)
 
 **Plan in ChatGPT. Build with your local agents.**
 
@@ -51,7 +51,7 @@ Why plan in ChatGPT:
   you can plan, start runs on your Claude Code, Codex, OpenCode v2, or Pi agents, and review
   the results from anywhere while your machine does the building.
 
-![The local Manager showing Pi, Codex, and Claude Code adapters](https://raw.githubusercontent.com/sheldonxxxx/hashi/main/docs/assets/hashi-manager.png)
+![The local Manager showing Pi, Codex, and Claude Code adapters](https://raw.githubusercontent.com/sheldonxxxx/Hashi/main/docs/assets/hashi-manager.png)
 
 ## Safe by default
 

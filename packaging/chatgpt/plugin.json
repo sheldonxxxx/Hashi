@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "description": "Plan in ChatGPT, build with local agents, and review real workspace evidence.",
   "author": {"name": "Hashi contributors"},
-  "homepage": "https://github.com/sheldonxxxx/hashi",
-  "repository": "https://github.com/sheldonxxxx/hashi",
+  "homepage": "https://github.com/sheldonxxxx/Hashi",
+  "repository": "https://github.com/sheldonxxxx/Hashi",
   "license": "MIT",
   "keywords": ["mcp", "coding", "workspace"],
   "extensions": {

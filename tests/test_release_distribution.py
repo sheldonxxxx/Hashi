@@ -313,7 +313,7 @@ def test_pi_package_publish_inventory():
     assert pkg.get("private") is not True
     assert pkg.get("name") == "hashi-pi-host-adapter"
     repo = pkg.get("repository", {})
-    assert repo.get("url") == "https://github.com/sheldonxxxx/hashi"
+    assert repo.get("url") == "https://github.com/sheldonxxxx/Hashi"
     assert repo.get("directory") == "runtime/pi-host-adapter"
     pub = pkg.get("publishConfig", {})
     assert pub.get("access") == "public"

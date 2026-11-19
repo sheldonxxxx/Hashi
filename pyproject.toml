@@ -37,10 +37,10 @@ license = "MIT"
 license-files = ["LICENSE"]
 
 [project.urls]
-Homepage = "https://github.com/sheldonxxxx/hashi"
-Documentation = "https://github.com/sheldonxxxx/hashi/blob/main/docs/README.md"
-Changelog = "https://github.com/sheldonxxxx/hashi/blob/main/CHANGELOG.md"
-Issues = "https://github.com/sheldonxxxx/hashi/issues"
+Homepage = "https://github.com/sheldonxxxx/Hashi"
+Documentation = "https://github.com/sheldonxxxx/Hashi/blob/main/docs/README.md"
+Changelog = "https://github.com/sheldonxxxx/Hashi/blob/main/CHANGELOG.md"
+Issues = "https://github.com/sheldonxxxx/Hashi/issues"
 
 [project.optional-dependencies]
 claude = ["claude-agent-sdk>=0.2.163,<0.3"]

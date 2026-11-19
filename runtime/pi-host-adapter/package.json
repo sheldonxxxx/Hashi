@@ -11,14 +11,14 @@
     "ai-agents",
     "coding-agent"
   ],
-  "homepage": "https://github.com/sheldonxxxx/hashi/blob/main/docs/RUNTIMES.md",
+  "homepage": "https://github.com/sheldonxxxx/Hashi/blob/main/docs/RUNTIMES.md",
   "bugs": {
-    "url": "https://github.com/sheldonxxxx/hashi/issues"
+    "url": "https://github.com/sheldonxxxx/Hashi/issues"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sheldonxxxx/hashi",
+    "url": "https://github.com/sheldonxxxx/Hashi",
     "directory": "runtime/pi-host-adapter"
   },
   "publishConfig": {
